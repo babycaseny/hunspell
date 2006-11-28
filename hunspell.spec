@@ -7,7 +7,7 @@ Group: System Environment/Libraries
 URL: http://hunspell.sourceforge.net/
 BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
 License: LGPL
-BuildRequires: libtool, gzip
+BuildRequires: libtool
 Patch0: hunspell-1.1.4-sharedlibs.patch
 
 %description
@@ -44,6 +44,7 @@ make
 rm -rf $RPM_BUILD_ROOT
 %makeinstall
 %find_lang %{name}
+rm -f $RPM_BUILD_ROOT/%{_libdir}/*.a
 rm -f $RPM_BUILD_ROOT/%{_libdir}/*.la
 rm -f $RPM_BUILD_ROOT/%{_bindir}/example
 mkdir $RPM_BUILD_ROOT/%{_datadir}/myspell
@@ -72,7 +73,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 %{_includedir}/%{name}
 %{_libdir}/*.so
-%{_libdir}/*.a
 %{_bindir}/munch
 %{_bindir}/unmunch
 
