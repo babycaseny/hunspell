@@ -12,8 +12,8 @@
 +                        else {
 +			        int len = strlen(dicname);
 +			        for (int i = 0; i < len; ++i) {
-+			            if ((dicname[i] == '_') && (i+2 < len)) {
-+			                    dicname[i+2] = 0;
++			            if ((dicname[i] == '_') && (i+3 < len)) {
++			                    dicname[i+3] = 0;
 +			                    break;
 +			            }
 +                                }
