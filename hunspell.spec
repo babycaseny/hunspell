@@ -1,7 +1,7 @@
 Name: hunspell
 Summary: Hunspell is a spell checker and morphological analyzer library
 Version: 1.1.4
-Release: 4%{?dist}
+Release: 5%{?dist}
 Source: %{name}-%{version}.tar.gz
 Group: System Environment/Libraries
 URL: http://hunspell.sourceforge.net/
@@ -19,7 +19,7 @@ character encoding. Hunspell interfaces: Ispell-like terminal interface using
 Curses library, Ispell pipe interface, OpenOffice.org UNO module.
 
 %package devel
-Requires: hunspell = %{PACKAGE_VERSION}
+Requires: hunspell = %{PACKAGE_VERSION}, pkgconfig
 Summary: Files for developing with hunspell
 Group: Development/Libraries
 
@@ -79,8 +79,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/*.so
 %{_bindir}/munch
 %{_bindir}/unmunch
+%{_libdir}/pkgconfig/hunspell.pc
 
 %changelog
+* Fri Jan 19 2007 Caolan McNamara <caolanm@redhat.com> - 1.1.4-5
+- .pc
+
 * Thu Jan 11 2007 Caolan McNamara <caolanm@redhat.com> - 1.1.4-4
 - fix out of range
 
