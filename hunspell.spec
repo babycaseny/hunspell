@@ -10,6 +10,7 @@ License:   LGPL
 
 BuildRequires: libtool
 Patch0: hunspell-1.1.4-defaultdictfromlang.patch
+Patch1: hunspell-1.1.5-missingheaders.patch
 
 %description
 Hunspell is a spell checker and morphological analyzer library and program 
@@ -28,6 +29,7 @@ Includes and definitions for developing with hunspell
 %prep
 %setup -q
 %patch0 -p1 -b .defaultdictfromlang.patch
+%patch1 -p1 -b .missingheaders.patch
 
 %build
 libtoolize --automake --force
@@ -81,9 +83,6 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Tue Mar 20 2007 Caolan McNamara <caolanm@redhat.com> - 1.1.5-1
 - next version
-- drop integrated hunspell-1.1.4-sharedlibs.patch
-- drop integrated hunspell-1.1.4-capi.patch
-
 
 * Fri Feb 09 2007 Caolan McNamara <caolanm@redhat.com> - 1.1.4-6
 - some spec cleanups
