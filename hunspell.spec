@@ -64,9 +64,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc README README.myspell COPYING COPYING.LGPL COPYING.MPL AUTHORS AUTHORS.myspell license.hunspell license.myspell THANKS
 %{_libdir}/*.so.*
 %{_datadir}/myspell
-%{_bindir}/hunmorph
 %{_bindir}/hunspell
-%{_bindir}/hunstem
 %{_mandir}/man1/hunspell.1.gz
 %{_mandir}/man4/hunspell.4.gz
 %{_mandir}/*/man1/hunspell.1.gz
