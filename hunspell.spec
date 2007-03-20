@@ -1,7 +1,7 @@
 Name:      hunspell
 Summary:   Hunspell is a spell checker and morphological analyzer library
-Version:   1.1.4
-Release:   6%{?dist}
+Version:   1.1.5
+Release:   1%{?dist}
 Source:    http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
 Group:     System Environment/Libraries
 URL:       http://hunspell.sourceforge.net/
@@ -83,6 +83,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/pkgconfig/hunspell.pc
 
 %changelog
+* Tue Mar 20 2007 Caolan McNamara <caolanm@redhat.com> - 1.1.5-1
+- next version
+
 * Fri Feb 09 2007 Caolan McNamara <caolanm@redhat.com> - 1.1.4-6
 - some spec cleanups
 
