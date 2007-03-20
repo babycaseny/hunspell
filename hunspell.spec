@@ -1,7 +1,7 @@
 Name:      hunspell
 Summary:   Hunspell is a spell checker and morphological analyzer library
 Version:   1.1.5
-Release:   1%{?dist}
+Release:   2%{?dist}
 Source:    http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
 Group:     System Environment/Libraries
 URL:       http://hunspell.sourceforge.net/
@@ -11,6 +11,7 @@ License:   LGPL
 BuildRequires: libtool
 Patch0: hunspell-1.1.4-defaultdictfromlang.patch
 Patch1: hunspell-1.1.5-missingheaders.patch
+Patch2: hunspell-1.1.5-badheader.patch
 
 %description
 Hunspell is a spell checker and morphological analyzer library and program 
@@ -30,6 +31,7 @@ Includes and definitions for developing with hunspell
 %setup -q
 %patch0 -p1 -b .defaultdictfromlang.patch
 %patch1 -p1 -b .missingheaders.patch
+%patch2 -p1 -b .badheader.patch
 
 %build
 libtoolize --automake --force
@@ -79,6 +81,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/pkgconfig/hunspell.pc
 
 %changelog
+* Tue Mar 20 2007 Caolan McNamara <caolanm@redhat.com> - 1.1.5-2
+- some junk in delivered headers
+
 * Tue Mar 20 2007 Caolan McNamara <caolanm@redhat.com> - 1.1.5-1
 - next version
 
