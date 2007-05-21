@@ -1,7 +1,7 @@
 Name:      hunspell
 Summary:   Hunspell is a spell checker and morphological analyzer library
-Version:   1.1.5
-Release:   2%{?dist}
+Version:   1.1.5.3
+Release:   1%{?dist}
 Source:    http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
 Group:     System Environment/Libraries
 URL:       http://hunspell.sourceforge.net/
@@ -10,8 +10,7 @@ License:   LGPL
 
 BuildRequires: libtool
 Patch0: hunspell-1.1.4-defaultdictfromlang.patch
-Patch1: hunspell-1.1.5-missingheaders.patch
-Patch2: hunspell-1.1.5-badheader.patch
+Patch1: hunspell-1.1.5-badheader.patch
 
 %description
 Hunspell is a spell checker and morphological analyzer library and program 
@@ -30,15 +29,14 @@ Includes and definitions for developing with hunspell
 %prep
 %setup -q
 %patch0 -p1 -b .defaultdictfromlang.patch
-%patch1 -p1 -b .missingheaders.patch
-%patch2 -p1 -b .badheader.patch
+%patch1 -p1 -b .badheader.patch
 
 %build
 libtoolize --automake --force
 aclocal -I m4
 autoconf
 automake
-%configure --disable-static
+%configure --disable-static  --with-ui --with-readline
 for i in man/*.? man/hu/*.?; do
     iconv -f ISO-8859-2 -t UTF-8 $i > $i.new
     mv -f $i.new $i
@@ -53,6 +51,7 @@ rm -f $RPM_BUILD_ROOT/%{_libdir}/*.a
 rm -f $RPM_BUILD_ROOT/%{_libdir}/*.la
 rm -f $RPM_BUILD_ROOT/%{_bindir}/example
 mkdir $RPM_BUILD_ROOT/%{_datadir}/myspell
+mv $RPM_BUILD_ROOT/%{_includedir}/*munch* $RPM_BUILD_ROOT/%{_includedir}/%{name}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -81,6 +80,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/pkgconfig/hunspell.pc
 
 %changelog
+* Mon May 21 2007 Caolan McNamara <caolanm@redhat.com> - 1.1.5.3-1
+- patchlevel release
+
 * Tue Mar 20 2007 Caolan McNamara <caolanm@redhat.com> - 1.1.5-2
 - some junk in delivered headers
 
