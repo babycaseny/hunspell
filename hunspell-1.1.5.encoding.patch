@@ -1,0 +1,260 @@
+diff -ru hunspell-1.1.5.orig/src/hunspell/csutil.cxx hunspell-1.1.5/src/hunspell/csutil.cxx
+--- hunspell-1.1.5.orig/src/hunspell/csutil.cxx	2007-03-12 12:01:56.000000000 +0000
++++ hunspell-1.1.5/src/hunspell/csutil.cxx	2007-05-21 13:31:46.000000000 +0100
+@@ -5090,6 +5090,10 @@
+ #ifndef OPENOFFICEORG
+ #ifndef MOZILLA_CLIENT
+ int initialize_utf_tbl() {
++
++  if (utf_tbl)
++      return 0;
++
+   utf_tbl = (unicode_info2 *) malloc(CONTSIZE * sizeof(unicode_info2));
+   if (utf_tbl) {
+     int j;
+diff -ru hunspell-1.1.5.orig/src/parsers/textparser.cxx hunspell-1.1.5/src/parsers/textparser.cxx
+--- hunspell-1.1.5.orig/src/parsers/textparser.cxx	2007-03-05 12:59:53.000000000 +0000
++++ hunspell-1.1.5/src/parsers/textparser.cxx	2007-05-21 13:31:46.000000000 +0100
+@@ -5,6 +5,7 @@
+ 
+ #include "../hunspell/csutil.hxx"
+ #include "textparser.hxx"
++#include <langinfo.h>
+ 
+ #ifndef W32
+ using namespace std;
+@@ -46,22 +47,76 @@
+ 
+ #define LATIN1_LEN (sizeof(LATIN1) / sizeof(char *))
+ 
+-TextParser::TextParser() {
++TextParser::TextParser() : todict(NULL), fromdict(NULL) {
+ 	init((char *) NULL);
+ }
+ 
+-TextParser::TextParser(const char * wordchars)
++static char *changeenc(iconv_t cd, char *token)
++{
++	if (!cd || !token) return token;
++	
++	iconv (cd, NULL, NULL, NULL, NULL);
++
++	char *inptr = token;
++	size_t insize = strlen(token);
++
++	size_t avail = (insize + 1) * 3;
++	char *wrptr = (char*)malloc(avail);
++	char *output = wrptr;
++
++	memset(wrptr, 0, avail);
++	size_t nconv = iconv (cd, &inptr, &insize, &wrptr, &avail);
++	free(token);
++
++        if (nconv == (size_t) -1)
++        {
++        	free(output);
++		output = NULL;
++	}
++
++	return output;
++}
++
++char *TextParser::todictenc(char *token)
++{
++	return changeenc(todict, token);
++}
++
++char *TextParser::fromdictenc(char *token)
++{
++	return changeenc(fromdict, token);
++}
++
++void TextParser::openiconv(const char *dictenc)
++{
++	todict = fromdict = NULL;
++	const char *srcenc = nl_langinfo(CODESET);
++
++	if (dictenc && srcenc && (strcmp(dictenc, srcenc) != 0))
++	{
++		if ((todict = iconv_open(dictenc, srcenc)) == (iconv_t) -1)
++ 			todict = NULL;
++		if ((fromdict = iconv_open(srcenc, dictenc)) == (iconv_t) -1)
++ 			fromdict = NULL;
++	}
++}
++
++TextParser::TextParser(const char * wordchars, const char *destenc)
+ {
+ 	init(wordchars);
++	openiconv(destenc);
+ }
+ 
+-TextParser::TextParser(unsigned short * wordchars, int len)
++TextParser::TextParser(unsigned short * wordchars, int len, const char *destenc)
+ {
+ 	init(wordchars, len);
++	openiconv(destenc);
+ }
+ 
+ TextParser::~TextParser() 
+ {
++	if (todict) iconv_close(todict);
++	if (fromdict) iconv_close(fromdict);
+ }
+ 
+ int TextParser::is_wordchar(char * w)
+diff -ru hunspell-1.1.5.orig/src/parsers/textparser.hxx hunspell-1.1.5/src/parsers/textparser.hxx
+--- hunspell-1.1.5.orig/src/parsers/textparser.hxx	2007-01-19 01:01:07.000000000 +0000
++++ hunspell-1.1.5/src/parsers/textparser.hxx	2007-05-21 13:31:46.000000000 +0100
+@@ -20,12 +20,15 @@
+  *
+  */
+ 
++#include <iconv.h>
++
+ class TextParser
+ {
+ 
+ protected:
+   void                init(const char *);
+   void                init(unsigned short * wordchars, int len);
++  void                openiconv(const char *dictenc);
+   int                 wordcharacters[256]; // for detection of the word boundaries
+   char                line[MAXPREVLINE][MAXLNLEN]; // parsed and previous lines
+   int                 actual; // actual line
+@@ -36,12 +39,14 @@
+   int                 next_char(char * line, int * pos);
+   unsigned short *    wordchars_utf16;
+   int                 wclen;
++  iconv_t             todict;
++  iconv_t             fromdict;
+ 
+ public:
+  
+   TextParser();
+-  TextParser(unsigned short * wordchars, int len);
+-  TextParser(const char * wc);
++  TextParser(unsigned short * wordchars, int len, const char *destenc);
++  TextParser(const char * wc, const char *destenc);
+   virtual ~TextParser();
+ 
+   void                put_line(char * line);
+@@ -53,7 +58,9 @@
+   int                 is_wordchar(char * w);
+   char *              get_latin1(char * s);
+   char *              next_char();
+-  
++
++  char * 	      todictenc(char * in);
++  char * 	      fromdictenc(char * in);
+ };
+ 
+ #endif
+diff -ru hunspell-1.1.5.orig/src/tools/hunspell.cxx hunspell-1.1.5/src/tools/hunspell.cxx
+--- hunspell-1.1.5.orig/src/tools/hunspell.cxx	2007-05-21 13:31:55.000000000 +0100
++++ hunspell-1.1.5/src/tools/hunspell.cxx	2007-05-21 13:31:46.000000000 +0100
+@@ -89,6 +89,8 @@
+ #endif
+ #endif
+ 
++#include <langinfo.h>
++
+ #define TEMPNAME "hunSPELL.bak"
+ 
+ extern char * mystrdup(const char * s);
+@@ -130,9 +132,11 @@
+ 
+ TextParser * newParser(char * wordchars, int format, char * extension, Hunspell * pMS) {
+     TextParser * p = NULL;
+-    int utf8 = (strcmp(pMS->get_dic_encoding(), "UTF-8") == 0);
++    int utf8 = (strcmp(nl_langinfo(CODESET), "UTF-8") == 0);
+ 
+     if (utf8) {
++        if (initialize_utf_tbl()) return NULL;
++
+         switch (format) {	
+         case FMT_LATEX: p = new LaTeXParser(wordchars_utf16, wordchars_utf16_len); break;
+         case FMT_HTML: p = new HTMLParser(wordchars_utf16, wordchars_utf16_len); break;
+@@ -173,9 +177,9 @@
+     }
+     if (!p) {
+         if (utf8) {
+-            p = new TextParser(wordchars_utf16, wordchars_utf16_len);
++            p = new TextParser(wordchars_utf16, wordchars_utf16_len, pMS->get_dic_encoding());
+         } else {
+-            p = new TextParser(wordchars);    
++            p = new TextParser(wordchars, pMS->get_dic_encoding());    
+         }
+     }
+     return p;
+@@ -260,7 +264,7 @@
+ 	w = w->next;
+ 	free(r);
+     }
+-    fclose(dic);
++    return 0 == fclose(dic);
+ }
+ 
+ char * basename(char * s, char c) {
+@@ -373,13 +377,15 @@
+ 
+ if (pos >= 0) {
+ 	parser->put_line(buf + pos);
+-	while ((token = parser->next_token())) {
++	while ((token = parser->todictenc(parser->next_token()))) {
+ 	    switch (filter_mode) {
+ 		
+ 		case BADWORD: {
+-			if (! pMS->spell(token)) {
++			int nRes = pMS->spell(token);
++            		token = parser->fromdictenc(token);
++			if (!nRes) {
+ 				bad = 1;
+-				if (! printgood) fprintf(stdout,"%s\n", token);
++				if (!printgood) fprintf(stdout,"%s\n", token);
+ 			} else {
+ 				if (printgood) fprintf(stdout,"%s\n", token);
+ 			}
+@@ -414,6 +420,8 @@
+ 			char ** wlst = NULL;
+ 			bad = 1;
+ 			int ns = pMS->suggest_auto(&wlst, token);
++			for (int j = 0; j < ns; j++)
++		    		wlst[j] = parser->fromdictenc(wlst[j]);
+ 			if (ns > 0) {
+ 				parser->change_token(wlst[0]);
+ 				if (filter_mode != AUTO2) {
+@@ -451,6 +459,8 @@
+ 		} else {
+ 			char ** wlst = NULL;
+ 			int ns = pMS->suggest(&wlst, token);
++			for (int j = 0; j < ns; j++)
++		    		wlst[j] = parser->fromdictenc(wlst[j]);
+ 			if (ns == 0) {
+ 		    		fprintf(stdout,"# %s %d", token, parser->get_tokenpos() + pos);
+ 			} else {
+@@ -554,6 +564,9 @@
+ 	getmaxyx(stdscr,y,x);
+ 	clear();
+ 
++	token = mystrdup(token);
++	token = parser->fromdictenc(token);
++
+ 	if (forbidden) printw(gettext("FORBIDDEN!"));
+ 	printw(gettext("\t%s\t\tFile: %s\n\n"), token,filename);
+ 
+@@ -899,11 +912,13 @@
+ 	char * token;
+ 	int dialogexit = 0;
+         int info;
+-	while ((token=parser->next_token())) {
++	while ((token=parser->todictenc(parser->next_token()))) {
+ 		if (! pMS->spell(token, &info, NULL)) {
+ 			dialogscreen(parser, token, filename, (info & SPELL_FORBIDDEN), NULL, 0); // preview
+ 			char ** wlst = NULL;
+ 			int ns = pMS->suggest(&wlst,token);
++			for (int j = 0; j < ns; j++)
++		    		wlst[j] = parser->fromdictenc(wlst[j]);
+ 			if (ns==0) {
+ 				dialogexit = dialog(parser, pMS, token, filename, wlst, ns, (info & SPELL_FORBIDDEN));
+ 			} else {	    
