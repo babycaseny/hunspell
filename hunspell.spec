@@ -1,7 +1,7 @@
 Name:      hunspell
 Summary:   Hunspell is a spell checker and morphological analyzer library
 Version:   1.1.5.3
-Release:   2%{?dist}
+Release:   3%{?dist}
 Source:    http://downloads.sourceforge.net/%{name}/hunspell-1.1.5-3.tar.gz
 Group:     System Environment/Libraries
 URL:       http://hunspell.sourceforge.net/
@@ -82,6 +82,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/pkgconfig/hunspell.pc
 
 %changelog
+* Tue May 22 2007 Caolan McNamara <caolanm@redhat.com> - 1.1.5.3-3
+- Resolves: rhbz#240696 extend encoding patch to promote and add
+  dictionary 8bit WORDCHARS to the ucs-2 word char list
+
 * Mon May 21 2007 Caolan McNamara <caolanm@redhat.com> - 1.1.5.3-2
 - Resolves: rhbz#240696 add hunspell-1.1.5.encoding.patch
 

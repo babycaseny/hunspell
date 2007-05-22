@@ -1,6 +1,101 @@
+diff -ru hunspell-1.1.5.orig/src/hunspell/affixmgr.cxx hunspell-1.1.5/src/hunspell/affixmgr.cxx
+--- hunspell-1.1.5.orig/src/hunspell/affixmgr.cxx	2007-03-12 11:38:23.000000000 +0000
++++ hunspell-1.1.5/src/hunspell/affixmgr.cxx	2007-05-22 12:35:27.000000000 +0100
+@@ -19,6 +19,8 @@
+ 
+ #include "csutil.hxx"
+ 
++#include <iconv.h>
++
+ #ifndef MOZILLA_CLIENT
+ #ifndef W32
+ using namespace std;
+@@ -230,6 +232,61 @@
+   checknum=0;
+ }
+ 
++char *changeenc(iconv_t cd, char *token) 
++{ 
++        if (!cd || !token) return token; 
++         
++        iconv (cd, NULL, NULL, NULL, NULL); 
++ 
++        char *inptr = token; 
++        size_t insize = strlen(token); 
++ 
++        size_t avail = (insize + 1) * 3; 
++        char *wrptr = (char*)malloc(avail); 
++        char *output = wrptr; 
++ 
++        memset(wrptr, 0, avail); 
++        size_t nconv = iconv (cd, &inptr, &insize, &wrptr, &avail); 
++        free(token); 
++ 
++        if (nconv == (size_t) -1) 
++        { 
++                free(output); 
++                output = NULL; 
++        } 
++ 
++        return output; 
++}
++
++void AffixMgr::fill_unicode_equivalents()
++{
++    if ((!ignorechars_utf16_len || !wordchars_utf16_len) && (ignorechars || wordchars))
++    {
++	iconv_t to_utf16 = iconv_open("UCS2", encoding);
++	if (to_utf16 == 0 || to_utf16 == (iconv_t) -1)
++		return;
++
++	unsigned short *p;
++
++	if (!ignorechars_utf16_len && ignorechars && strlen(ignorechars))
++	{
++		char *tmp = mystrdup(ignorechars);
++		ignorechars_utf16 = (unsigned short*)changeenc(to_utf16, tmp);
++		for (p = ignorechars_utf16; *p; ++p);
++		ignorechars_utf16_len = p - ignorechars_utf16;
++		flag_qsort(ignorechars_utf16, 0, ignorechars_utf16_len);
++	}
++
++	if (!wordchars_utf16_len && wordchars && strlen(wordchars))
++	{
++		char *tmp = mystrdup(wordchars);
++		wordchars_utf16 = (unsigned short*)changeenc(to_utf16, tmp);
++		for (p = wordchars_utf16; *p; ++p);
++		wordchars_utf16_len = p - wordchars_utf16;
++		flag_qsort(wordchars_utf16, 0, wordchars_utf16_len);
++	}
++    }
++}
+ 
+ // read in aff file and build up prefix and suffix entry objects 
+ int  AffixMgr::parse_file(const char * affpath)
+@@ -659,6 +716,9 @@
+         breaktable[0] = mystrdup("-");
+         numbreak = 1;
+     }
++
++    fill_unicode_equivalents();
++
+     return 0;
+ }
+ 
+diff -ru hunspell-1.1.5.orig/src/hunspell/affixmgr.hxx hunspell-1.1.5/src/hunspell/affixmgr.hxx
+--- hunspell-1.1.5.orig/src/hunspell/affixmgr.hxx	2007-03-12 11:42:52.000000000 +0000
++++ hunspell-1.1.5/src/hunspell/affixmgr.hxx	2007-05-22 12:00:14.000000000 +0100
+@@ -203,6 +203,7 @@
+   int process_pfx_tree_to_list();
+   int process_sfx_tree_to_list();
+   int redundant_condition(char, char * strip, int stripl, const char * cond, char *);
++  void fill_unicode_equivalents();
+ };
+ 
+ #endif
 diff -ru hunspell-1.1.5.orig/src/hunspell/csutil.cxx hunspell-1.1.5/src/hunspell/csutil.cxx
 --- hunspell-1.1.5.orig/src/hunspell/csutil.cxx	2007-03-12 12:01:56.000000000 +0000
-+++ hunspell-1.1.5/src/hunspell/csutil.cxx	2007-05-21 13:31:46.000000000 +0100
++++ hunspell-1.1.5/src/hunspell/csutil.cxx	2007-05-22 12:21:30.000000000 +0100
 @@ -5090,6 +5090,10 @@
  #ifndef OPENOFFICEORG
  #ifndef MOZILLA_CLIENT
@@ -14,7 +109,7 @@ diff -ru hunspell-1.1.5.orig/src/hunspell/csutil.cxx hunspell-1.1.5/src/hunspell
      int j;
 diff -ru hunspell-1.1.5.orig/src/parsers/textparser.cxx hunspell-1.1.5/src/parsers/textparser.cxx
 --- hunspell-1.1.5.orig/src/parsers/textparser.cxx	2007-03-05 12:59:53.000000000 +0000
-+++ hunspell-1.1.5/src/parsers/textparser.cxx	2007-05-21 13:31:46.000000000 +0100
++++ hunspell-1.1.5/src/parsers/textparser.cxx	2007-05-22 12:02:24.000000000 +0100
 @@ -5,6 +5,7 @@
  
  #include "../hunspell/csutil.hxx"
@@ -23,7 +118,7 @@ diff -ru hunspell-1.1.5.orig/src/parsers/textparser.cxx hunspell-1.1.5/src/parse
  
  #ifndef W32
  using namespace std;
-@@ -46,22 +47,76 @@
+@@ -46,22 +47,52 @@
  
  #define LATIN1_LEN (sizeof(LATIN1) / sizeof(char *))
  
@@ -33,31 +128,7 @@ diff -ru hunspell-1.1.5.orig/src/parsers/textparser.cxx hunspell-1.1.5/src/parse
  }
  
 -TextParser::TextParser(const char * wordchars)
-+static char *changeenc(iconv_t cd, char *token)
-+{
-+	if (!cd || !token) return token;
-+	
-+	iconv (cd, NULL, NULL, NULL, NULL);
-+
-+	char *inptr = token;
-+	size_t insize = strlen(token);
-+
-+	size_t avail = (insize + 1) * 3;
-+	char *wrptr = (char*)malloc(avail);
-+	char *output = wrptr;
-+
-+	memset(wrptr, 0, avail);
-+	size_t nconv = iconv (cd, &inptr, &insize, &wrptr, &avail);
-+	free(token);
-+
-+        if (nconv == (size_t) -1)
-+        {
-+        	free(output);
-+		output = NULL;
-+	}
-+
-+	return output;
-+}
++extern char *changeenc(iconv_t cd, char *token);
 +
 +char *TextParser::todictenc(char *token)
 +{
@@ -105,7 +176,7 @@ diff -ru hunspell-1.1.5.orig/src/parsers/textparser.cxx hunspell-1.1.5/src/parse
  int TextParser::is_wordchar(char * w)
 diff -ru hunspell-1.1.5.orig/src/parsers/textparser.hxx hunspell-1.1.5/src/parsers/textparser.hxx
 --- hunspell-1.1.5.orig/src/parsers/textparser.hxx	2007-01-19 01:01:07.000000000 +0000
-+++ hunspell-1.1.5/src/parsers/textparser.hxx	2007-05-21 13:31:46.000000000 +0100
++++ hunspell-1.1.5/src/parsers/textparser.hxx	2007-05-22 11:29:52.000000000 +0100
 @@ -20,12 +20,15 @@
   *
   */
@@ -152,7 +223,7 @@ diff -ru hunspell-1.1.5.orig/src/parsers/textparser.hxx hunspell-1.1.5/src/parse
  #endif
 diff -ru hunspell-1.1.5.orig/src/tools/hunspell.cxx hunspell-1.1.5/src/tools/hunspell.cxx
 --- hunspell-1.1.5.orig/src/tools/hunspell.cxx	2007-05-21 13:31:55.000000000 +0100
-+++ hunspell-1.1.5/src/tools/hunspell.cxx	2007-05-21 13:31:46.000000000 +0100
++++ hunspell-1.1.5/src/tools/hunspell.cxx	2007-05-22 11:15:33.000000000 +0100
 @@ -89,6 +89,8 @@
  #endif
  #endif
