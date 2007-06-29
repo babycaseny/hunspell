@@ -1,0 +1,17 @@
+diff -ru hunspell-1.1.5.orig/src/hunspell/hunspell.cxx hunspell-1.1.5/src/hunspell/hunspell.cxx
+--- hunspell-1.1.5.orig/src/hunspell/hunspell.cxx	2007-06-29 12:12:57.000000000 +0100
++++ hunspell-1.1.5/src/hunspell/hunspell.cxx	2007-06-29 12:18:31.000000000 +0100
+@@ -1674,7 +1674,12 @@
+   if (!word) return 0;
+   char * m = morph(word);
+   if(!m) return 0;
+-  if (!out) return line_tok(m, out);
++  if (!out)
++  {
++     n = line_tok(m, out);
++     free(m)
++     return n;
++  }
+ 
+   // without memory allocation
+   /* BUG missing buffer size checking */
