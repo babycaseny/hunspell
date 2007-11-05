@@ -1,8 +1,8 @@
 Name:      hunspell
 Summary:   Hunspell is a spell checker and morphological analyzer library
-Version:   1.1.12.2
-Release:   2%{?dist}
-Source:    http://downloads.sourceforge.net/%{name}/hunspell-1.1.12-2.tar.gz
+Version:   1.2.1
+Release:   1%{?dist}
+Source:    http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Group:     System Environment/Libraries
 URL:       http://hunspell.sourceforge.net/
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -25,7 +25,7 @@ Group: Development/Libraries
 Includes and definitions for developing with hunspell
 
 %prep
-%setup -q -n hunspell-1.1.12
+%setup -q
 
 %build
 libtoolize --automake --force
@@ -73,9 +73,14 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/*.so
 %{_bindir}/munch
 %{_bindir}/unmunch
+%{_bindir}/analyze
+%{_bindir}/chmorph
 %{_libdir}/pkgconfig/hunspell.pc
 
 %changelog
+* Mon Nov 05 2007 Caolan McNamara <caolanm@redhat.com> - 1.2.1-1
+- latest version
+
 * Mon Oct 08 2007 Caolan McNamara <caolanm@redhat.com> - 1.1.12.2-2
 - lang fix for man pages from Ville Skyttä
 
