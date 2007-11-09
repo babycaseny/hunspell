@@ -1,0 +1,9 @@
+--- hunspell-1.2.1.orig/hunspell.pc.in	2007-04-06 09:05:34.000000000 +0100
++++ hunspell-1.2.1/hunspell.pc.in	2007-11-09 14:21:26.000000000 +0000
+@@ -6,5 +6,5 @@
+ Name: hunspell
+ Description: Hunpell spellchecking library
+ Version: @VERSION@
+-Libs: -L${libdir} -lhunspell-@HUNSPELL_VERSION_MAJOR@.@HUNSPELL_VERSION_MINOR@
++Libs: -L${libdir} -lhunspell
+ Cflags: -I${includedir}/hunspell
