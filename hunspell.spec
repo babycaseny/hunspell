@@ -1,8 +1,9 @@
 Name:      hunspell
 Summary:   Hunspell is a spell checker and morphological analyzer library
 Version:   1.2.1
-Release:   5%{?dist}
-Source:    http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
+Release:   6%{?dist}
+Source0:   http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
+Source1:   http://people.debian.org/~agmartin/misc/ispellaff2myspell
 Group:     System Environment/Libraries
 URL:       http://hunspell.sourceforge.net/
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -30,6 +31,15 @@ Includes and definitions for developing with hunspell
 %setup -q
 %patch1 -p1 -b .pkgconfig.patch
 %patch2 -p1 -b .1863239.badstructs.patch
+# Filter unwanted Requires for the use explicitely string in ispellaff2myspell
+cat << \EOF > %{name}-req
+#!/bin/sh
+%{__perl_requires} $* |\
+  sed -e '/perl(explicitely)/d'
+EOF
+
+%define __perl_requires %{_builddir}/%{name}-%{version}/%{name}-req
+chmod +x %{__perl_requires}
 
 %build
 libtoolize --automake --force
@@ -52,6 +62,7 @@ rm -f $RPM_BUILD_ROOT/%{_libdir}/*.la
 rm -f $RPM_BUILD_ROOT/%{_bindir}/example
 mkdir $RPM_BUILD_ROOT/%{_datadir}/myspell
 mv $RPM_BUILD_ROOT/%{_includedir}/*munch* $RPM_BUILD_ROOT/%{_includedir}/%{name}
+install -m 755 %{SOURCE1} $RPM_BUILD_ROOT/%{_bindir}/ispellaff2myspell
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -79,9 +90,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/unmunch
 %{_bindir}/analyze
 %{_bindir}/chmorph
+%{_bindir}/ispellaff2myspell
 %{_libdir}/pkgconfig/hunspell.pc
 
 %changelog
+* Wed Mar 05 2008 Caolan McNamara <caolanm@redhat.com> - 1.2.1-6
+- add ispellaff2myspell to devel
+
 * Mon Feb 18 2008 Fedora Release Engineering <rel-eng@fedoraproject.org> - 1.2.1-5
 - Autorebuild for GCC 4.3
 
