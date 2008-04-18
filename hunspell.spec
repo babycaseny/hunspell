@@ -1,7 +1,7 @@
 Name:      hunspell
 Summary:   Hunspell is a spell checker and morphological analyzer library
-Version:   1.2.1
-Release:   6%{?dist}
+Version:   1.2.2
+Release:   2%{?dist}
 Source0:   http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Source1:   http://people.debian.org/~agmartin/misc/ispellaff2myspell
 Group:     System Environment/Libraries
@@ -9,9 +9,6 @@ URL:       http://hunspell.sourceforge.net/
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 License:   LGPLv2+ or GPLv2+ or MPLv1.1
 BuildRequires: libtool, ncurses-devel
-
-Patch1: hunspell-pkgconfig.patch
-Patch2: hunspell-1.2.1-1863239.badstructs.patch
 
 %description
 Hunspell is a spell checker and morphological analyzer library and program 
@@ -29,8 +26,6 @@ Includes and definitions for developing with hunspell
 
 %prep
 %setup -q
-%patch1 -p1 -b .pkgconfig.patch
-%patch2 -p1 -b .1863239.badstructs.patch
 # Filter unwanted Requires for the use explicitely string in ispellaff2myspell
 cat << \EOF > %{name}-req
 #!/bin/sh
@@ -90,10 +85,19 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/unmunch
 %{_bindir}/analyze
 %{_bindir}/chmorph
+%{_bindir}/hzip
+%{_bindir}/hunzip
 %{_bindir}/ispellaff2myspell
 %{_libdir}/pkgconfig/hunspell.pc
 
 %changelog
+* Thu Apr 17 2008 Caolan McNamara <caolanm@redhat.com> - 1.2.2-2
+- sync pkgconfig
+
+* Tue Apr 15 2008 Caolan McNamara <caolanm@redhat.com> - 1.2.2-1
+- latest version
+- drop integrated hunspell-1.2.1-1863239.badstructs.patch
+
 * Wed Mar 05 2008 Caolan McNamara <caolanm@redhat.com> - 1.2.1-6
 - add ispellaff2myspell to devel
 
