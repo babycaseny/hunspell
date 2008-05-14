@@ -1,0 +1,28 @@
+diff -ru hunspell-1.2.2.orig/src/hunspell/hunspell.cxx hunspell-1.2.2/src/hunspell/hunspell.cxx
+--- hunspell-1.2.2.orig/src/hunspell/hunspell.cxx	2008-05-14 20:49:20.000000000 +0100
++++ hunspell-1.2.2/src/hunspell/hunspell.cxx	2008-05-14 20:53:44.000000000 +0100
+@@ -22,6 +22,11 @@
+ #endif
+ #endif
+ 
++Hunspell::Hunspell(const char * affpath, const char * dpath)
++{
++    Hunspell::Hunspell(affpath, dpath, NULL);
++}
++
+ Hunspell::Hunspell(const char * affpath, const char * dpath, const char * key)
+ {
+     encoding = NULL;
+diff -ru hunspell-1.2.2.orig/src/hunspell/hunspell.hxx hunspell-1.2.2/src/hunspell/hunspell.hxx
+--- hunspell-1.2.2.orig/src/hunspell/hunspell.hxx	2008-05-14 20:49:20.000000000 +0100
++++ hunspell-1.2.2/src/hunspell/hunspell.hxx	2008-05-14 20:49:50.000000000 +0100
+@@ -51,7 +51,8 @@
+    * input: path of affix file and dictionary file
+    */
+ 
+-  Hunspell(const char * affpath, const char * dpath, const char * key = NULL);
++  Hunspell(const char * affpath, const char * dpath);
++  Hunspell(const char * affpath, const char * dpath, const char * key);
+   ~Hunspell();
+ 
+   /* load extra dictionaries (only dic files) */

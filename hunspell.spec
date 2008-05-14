@@ -1,7 +1,7 @@
 Name:      hunspell
 Summary:   Hunspell is a spell checker and morphological analyzer library
 Version:   1.2.2
-Release:   1%{?dist}
+Release:   2%{?dist}
 Source0:   http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Source1:   http://people.debian.org/~agmartin/misc/ispellaff2myspell
 Group:     System Environment/Libraries
@@ -9,6 +9,7 @@ URL:       http://hunspell.sourceforge.net/
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 License:   LGPLv2+ or GPLv2+ or MPLv1.1
 BuildRequires: libtool, ncurses-devel
+Patch0:    hunspell-1.2.2-xulrunner.pita.patch
 
 %description
 Hunspell is a spell checker and morphological analyzer library and program 
@@ -26,6 +27,7 @@ Includes and definitions for developing with hunspell
 
 %prep
 %setup -q
+%patch0 -p1 -b .xulrunner.pita.patch
 # Filter unwanted Requires for the use explicitely string in ispellaff2myspell
 cat << \EOF > %{name}-req
 #!/bin/sh
@@ -91,6 +93,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/pkgconfig/hunspell.pc
 
 %changelog
+* Wed May 14 2008 Caolan McNamara <caolanm@redhat.com> - 1.2.2-2
+- give xulrunner what it needs so we can get on with it
+
 * Fri Apr 18 2008 Caolan McNamara <caolanm@redhat.com> - 1.2.2-1
 - latest version
 - drop integrated hunspell-1.2.1-1863239.badstructs.patch
