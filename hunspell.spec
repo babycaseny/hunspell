@@ -1,7 +1,7 @@
 Name:      hunspell
 Summary:   Hunspell is a spell checker and morphological analyzer library
 Version:   1.2.2
-Release:   2%{?dist}
+Release:   3%{?dist}
 Source0:   http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Source1:   http://people.debian.org/~agmartin/misc/ispellaff2myspell
 Group:     System Environment/Libraries
@@ -93,6 +93,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/pkgconfig/hunspell.pc
 
 %changelog
+* Fri May 16 2008 Caolan McNamara <caolanm@redhat.com> - 1.2.2-3
+- Resolves: rhbz#446821 fix crash
+
 * Wed May 14 2008 Caolan McNamara <caolanm@redhat.com> - 1.2.2-2
 - give xulrunner what it needs so we can get on with it
 
