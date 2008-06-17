@@ -9,6 +9,7 @@ URL:       http://hunspell.sourceforge.net/
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 License:   LGPLv2+ or GPLv2+ or MPLv1.1
 BuildRequires: libtool, ncurses-devel
+Patch0:    hunspell-1.2.2-xulrunner.pita.patch
 
 %description
 Hunspell is a spell checker and morphological analyzer library and program 
@@ -26,6 +27,7 @@ Includes and definitions for developing with hunspell
 
 %prep
 %setup -q
+%patch0 -p1 -b .pita.patch
 # Filter unwanted Requires for the "use explicitely" string in ispellaff2myspell
 cat << \EOF > %{name}-req
 #!/bin/sh
