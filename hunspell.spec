@@ -1,7 +1,7 @@
 Name:      hunspell
 Summary:   Hunspell is a spell checker and morphological analyzer library
-Version:   1.2.2
-Release:   3%{?dist}
+Version:   1.2.4
+Release:   1%{?dist}
 Source0:   http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Source1:   http://people.debian.org/~agmartin/misc/ispellaff2myspell
 Group:     System Environment/Libraries
@@ -9,7 +9,6 @@ URL:       http://hunspell.sourceforge.net/
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 License:   LGPLv2+ or GPLv2+ or MPLv1.1
 BuildRequires: libtool, ncurses-devel
-Patch0:    hunspell-1.2.2-xulrunner.pita.patch
 
 %description
 Hunspell is a spell checker and morphological analyzer library and program 
@@ -27,8 +26,7 @@ Includes and definitions for developing with hunspell
 
 %prep
 %setup -q
-%patch0 -p1 -b .xulrunner.pita.patch
-# Filter unwanted Requires for the use explicitely string in ispellaff2myspell
+# Filter unwanted Requires for the "use explicitely" string in ispellaff2myspell
 cat << \EOF > %{name}-req
 #!/bin/sh
 %{__perl_requires} $* |\
@@ -91,8 +89,14 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/hunzip
 %{_bindir}/ispellaff2myspell
 %{_libdir}/pkgconfig/hunspell.pc
+%{_mandir}/man1/hunzip.1.gz
+%{_mandir}/man1/hzip.1.gz
+%{_mandir}/man3/hunspell.3.gz
 
 %changelog
+* Thu Jun 17 2008 Caolan McNamara <caolanm@redhat.com> - 1.2.4-1
+- latest version
+
 * Fri May 16 2008 Caolan McNamara <caolanm@redhat.com> - 1.2.2-3
 - Resolves: rhbz#446821 fix crash
 
