@@ -1,8 +1,8 @@
 Name:      hunspell
 Summary:   Hunspell is a spell checker and morphological analyzer library
-Version:   1.2.4
+Version:   1.2.4.2
 Release:   1%{?dist}
-Source0:   http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
+Source0:   http://downloads.sourceforge.net/%{name}/hunspell-1.2.4-2.tar.gz
 Source1:   http://people.debian.org/~agmartin/misc/ispellaff2myspell
 Group:     System Environment/Libraries
 URL:       http://hunspell.sourceforge.net/
@@ -26,7 +26,7 @@ Group: Development/Libraries
 Includes and definitions for developing with hunspell
 
 %prep
-%setup -q
+%setup -q -n hunspell-1.2.4
 %patch0 -p1 -b .pita.patch
 # Filter unwanted Requires for the "use explicitely" string in ispellaff2myspell
 cat << \EOF > %{name}-req
@@ -35,7 +35,7 @@ cat << \EOF > %{name}-req
   sed -e '/perl(explicitely)/d'
 EOF
 
-%define __perl_requires %{_builddir}/%{name}-%{version}/%{name}-req
+%define __perl_requires %{_builddir}/%{name}-1.2.4/%{name}-req
 chmod +x %{__perl_requires}
 
 %build
@@ -96,6 +96,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/hunspell.3.gz
 
 %changelog
+* Fri Jun 18 2008 Caolan McNamara <caolanm@redhat.com> - 1.2.4.2-1
+- latest version
+
 * Thu Jun 17 2008 Caolan McNamara <caolanm@redhat.com> - 1.2.4-1
 - latest version
 
