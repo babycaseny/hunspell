@@ -1,8 +1,8 @@
 Name:      hunspell
 Summary:   Hunspell is a spell checker and morphological analyzer library
-Version:   1.2.4.2
-Release:   2%{?dist}
-Source0:   http://downloads.sourceforge.net/%{name}/hunspell-1.2.4-2.tar.gz
+Version:   1.2.5
+Release:   1%{?dist}
+Source0:   http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Source1:   http://people.debian.org/~agmartin/misc/ispellaff2myspell
 Group:     System Environment/Libraries
 URL:       http://hunspell.sourceforge.net/
@@ -25,7 +25,7 @@ Group: Development/Libraries
 Includes and definitions for developing with hunspell
 
 %prep
-%setup -q -n hunspell-1.2.4
+%setup -q
 # Filter unwanted Requires for the "use explicitely" string in ispellaff2myspell
 cat << \EOF > %{name}-req
 #!/bin/sh
@@ -33,7 +33,7 @@ cat << \EOF > %{name}-req
   sed -e '/perl(explicitely)/d'
 EOF
 
-%define __perl_requires %{_builddir}/%{name}-1.2.4/%{name}-req
+%define __perl_requires %{_builddir}/%{name}-%{version}/%{name}-req
 chmod +x %{__perl_requires}
 
 %build
@@ -94,6 +94,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/hunspell.3.gz
 
 %changelog
+* Sun Jul 27 2008 Caolan McNamara <caolanm@redhat.com> - 1.2.5-1
+- latest version
+
 * Tue Jul 22 2008 Kristian Høgsberg <krh@redhat.com> - 1.2.4.2-2
 - Drop ABI breaking hunspell-1.2.2-xulrunner.pita.patch and fix the
   hunspell include in xulrunner.
