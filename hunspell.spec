@@ -1,9 +1,10 @@
 Name:      hunspell
 Summary:   Hunspell is a spell checker and morphological analyzer library
 Version:   1.2.7
-Release:   1%{?dist}
+Release:   2%{?dist}
 Source0:   http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Source1:   http://people.debian.org/~agmartin/misc/ispellaff2myspell
+Source2:   http://people.redhat.com/caolanm/hunspell/wordlist2hunspell
 Group:     System Environment/Libraries
 URL:       http://hunspell.sourceforge.net/
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -58,6 +59,7 @@ rm -f $RPM_BUILD_ROOT/%{_bindir}/example
 mkdir $RPM_BUILD_ROOT/%{_datadir}/myspell
 mv $RPM_BUILD_ROOT/%{_includedir}/*munch* $RPM_BUILD_ROOT/%{_includedir}/%{name}
 install -m 755 %{SOURCE1} $RPM_BUILD_ROOT/%{_bindir}/ispellaff2myspell
+install -m 755 %{SOURCE2} $RPM_BUILD_ROOT/%{_bindir}/wordlist2hunspell
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -88,12 +90,16 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/hzip
 %{_bindir}/hunzip
 %{_bindir}/ispellaff2myspell
+%{_bindir}/wordlist2hunspell
 %{_libdir}/pkgconfig/hunspell.pc
 %{_mandir}/man1/hunzip.1.gz
 %{_mandir}/man1/hzip.1.gz
 %{_mandir}/man3/hunspell.3.gz
 
 %changelog
+* Tue Sep 09 2008 Caolan McNamara <caolanm@redhat.com> - 1.2.7-2
+- add wordlist2hunspell
+
 * Sat Aug 23 2008 Caolan McNamara <caolanm@redhat.com> - 1.2.7-1
 - latest version
 
