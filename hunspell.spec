@@ -1,7 +1,7 @@
 Name:      hunspell
 Summary:   Hunspell is a spell checker and morphological analyzer library
 Version:   1.2.7
-Release:   2%{?dist}
+Release:   3%{?dist}
 Source0:   http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Source1:   http://people.debian.org/~agmartin/misc/ispellaff2myspell
 Source2:   http://people.redhat.com/caolanm/hunspell/wordlist2hunspell
@@ -97,6 +97,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/hunspell.3.gz
 
 %changelog
+* Mon Sep 15 2008 Caolan McNamara <caolanm@redhat.com> - 1.2.7-3
+- Workaround rhbz#462184 uniq/sort problems with viramas
+
 * Tue Sep 09 2008 Caolan McNamara <caolanm@redhat.com> - 1.2.7-2
 - add wordlist2hunspell
 
