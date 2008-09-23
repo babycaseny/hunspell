@@ -58,6 +58,8 @@ rm -f $RPM_BUILD_ROOT/%{_libdir}/*.la
 rm -f $RPM_BUILD_ROOT/%{_bindir}/example
 mkdir $RPM_BUILD_ROOT/%{_datadir}/myspell
 mv $RPM_BUILD_ROOT/%{_includedir}/*munch* $RPM_BUILD_ROOT/%{_includedir}/%{name}
+install -m 755 src/tools/affixcompress $RPM_BUILD_ROOT/%{_bindir}/affixcompress
+install -m 755 src/tools/makealias $RPM_BUILD_ROOT/%{_bindir}/makealias
 install -m 755 %{SOURCE1} $RPM_BUILD_ROOT/%{_bindir}/ispellaff2myspell
 install -m 755 %{SOURCE2} $RPM_BUILD_ROOT/%{_bindir}/wordlist2hunspell
 
@@ -83,6 +85,8 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %{_includedir}/%{name}
 %{_libdir}/*.so
+%{_bindir}/affixcompress
+%{_bindir}/makealias
 %{_bindir}/munch
 %{_bindir}/unmunch
 %{_bindir}/analyze
