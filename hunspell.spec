@@ -1,7 +1,7 @@
 Name:      hunspell
 Summary:   Hunspell is a spell checker and morphological analyzer library
 Version:   1.2.8
-Release:   1%{?dist}
+Release:   2%{?dist}
 Source0:   http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Source1:   http://people.debian.org/~agmartin/misc/ispellaff2myspell
 Source2:   http://people.redhat.com/caolanm/hunspell/wordlist2hunspell
@@ -10,6 +10,7 @@ URL:       http://hunspell.sourceforge.net/
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 License:   LGPLv2+ or GPLv2+ or MPLv1.1
 BuildRequires: libtool, ncurses-devel
+Patch0:    hunspell-1.2.7-2314461.ispell-alike.patch
 
 %description
 Hunspell is a spell checker and morphological analyzer library and program 
@@ -27,6 +28,7 @@ Includes and definitions for developing with hunspell
 
 %prep
 %setup -q
+%patch1 -p1 -b .ispell-alike.patch
 # Filter unwanted Requires for the "use explicitely" string in ispellaff2myspell
 cat << \EOF > %{name}-req
 #!/bin/sh
@@ -103,6 +105,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/hunspell.3.gz
 
 %changelog
+* Wed Nov 19 2008 Caolan McNamara <caolanm@redhat.com> - 1.2.8-2
+- Resolves: rhbz#471085 in ispell compatible mode (-a), ignore
+  -m option which means something different to ispell
+
 * Sun Nov 02 2008 Caolan McNamara <caolanm@redhat.com> - 1.2.8-1
 - latest version
 
