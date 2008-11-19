@@ -10,7 +10,7 @@ URL:       http://hunspell.sourceforge.net/
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 License:   LGPLv2+ or GPLv2+ or MPLv1.1
 BuildRequires: libtool, ncurses-devel
-Patch0:    hunspell-1.2.7-2314461.ispell-alike.patch
+Patch1:    hunspell-1.2.7-2314461.ispell-alike.patch
 
 %description
 Hunspell is a spell checker and morphological analyzer library and program 
