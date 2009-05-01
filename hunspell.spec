@@ -1,7 +1,7 @@
 Name:      hunspell
 Summary:   A spell checker and morphological analyzer library
 Version:   1.2.8
-Release:   4%{?dist}
+Release:   5%{?dist}
 Source0:   http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Source1:   http://people.debian.org/~agmartin/misc/ispellaff2myspell
 Source2:   http://people.redhat.com/caolanm/hunspell/wordlist2hunspell
@@ -11,6 +11,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 License:   LGPLv2+ or GPLv2+ or MPLv1.1
 BuildRequires: libtool, ncurses-devel
 Patch1:    hunspell-1.2.7-2314461.ispell-alike.patch
+Patch2:    hunspell-1.2.8-2784983.defaultlanguage.patch
 
 %description
 Hunspell is a spell checker and morphological analyzer library and program 
@@ -29,6 +30,7 @@ Includes and definitions for developing with hunspell
 %prep
 %setup -q
 %patch1 -p1 -b .ispell-alike.patch
+%patch2 -p1 -b .defaultlanguage.patch
 # Filter unwanted Requires for the "use explicitely" string in ispellaff2myspell
 cat << \EOF > %{name}-req
 #!/bin/sh
@@ -105,6 +107,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/hunspell.3.gz
 
 %changelog
+* Fri May 01 2009 Caolan McNamara <caolanm@redhat.com> - 1.2.8-5
+- Resolves: rhbz#498556 fix default language detection
+
 * Tue Feb 24 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.2.8-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_11_Mass_Rebuild
 
