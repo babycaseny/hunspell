@@ -64,7 +64,7 @@ diff -ru hunspell-1.2.8.orig/src/tools/hunspell.cxx hunspell-1.2.8/src/tools/hun
 +			*/
 +			const char *tests[] = { "LANGUAGE", "LC_ALL", "LC_MESSAGES", "LANG" };
 +			for (int i = 0; i < sizeof(tests) / sizeof(const char*); ++i) {
-+				if (dicname=getenv(tests[i])) {
++				if ((dicname=getenv(tests[i]))) {
 +					dicname = mystrdup(dicname);
 +					char * dot = strchr(dicname, '.');
 +					if (dot) *dot = '\0';
@@ -84,7 +84,7 @@ diff -ru hunspell-1.2.8.orig/src/tools/hunspell.cxx hunspell-1.2.8/src/tools/hun
  
 +	if (showpath) {
 +		fprintf(stderr, gettext("SEARCH PATH:\n%s\n"), path);
-+		fprintf(stderr, gettext("AVAILABLE DICTIONARIES (path is not mandatory for -d option):\n"), path);
++		fprintf(stderr, gettext("AVAILABLE DICTIONARIES (path is not mandatory for -d option):\n"));
 +		search(path, NULL, NULL);
 +	}
 +
