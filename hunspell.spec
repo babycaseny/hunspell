@@ -12,7 +12,7 @@ License:   LGPLv2+ or GPLv2+ or MPLv1.1
 BuildRequires: libtool, ncurses-devel
 Patch1:    hunspell-1.2.7-2314461.ispell-alike.patch
 Patch2:    hunspell-1.2.8-2784983.defaultlanguage.patch
-Patch3:    hunspell-1.2.8-warnings.fortify.patch
+Patch3:    hunspell-1.2.8-2812045.warnings.fortify.patch
 
 %description
 Hunspell is a spell checker and morphological analyzer library and program 
