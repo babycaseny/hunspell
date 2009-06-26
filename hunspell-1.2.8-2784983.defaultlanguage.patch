@@ -47,7 +47,7 @@ diff -ru hunspell-1.2.8.orig/src/tools/hunspell.cxx hunspell-1.2.8/src/tools/hun
  	textdomain("hunspell");
          ui_enc = nl_langinfo(CODESET);
  #endif
-@@ -1515,13 +1514,23 @@
+@@ -1515,13 +1514,26 @@
  	
  	if (! dicname) {
  		if (! (dicname=getenv("DICTIONARY"))) {
@@ -73,6 +73,9 @@ diff -ru hunspell-1.2.8.orig/src/tools/hunspell.cxx hunspell-1.2.8/src/tools/hun
 +					break;
 +				}
 +			}
++
++			if (strcmp(dicname, "C") == 0)
++			    dicname=mystrdup("en_US");
 +
 +			if (! dicname) {
  		            dicname=mystrdup(DEFAULTDICNAME);
