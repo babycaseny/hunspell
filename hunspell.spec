@@ -109,7 +109,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/hunspell.3.gz
 
 %changelog
-- Tue Jul 07 2009 Caolan McNamara <caolanm@redhat.com> - 1.2.8-8
+* Tue Jul 07 2009 Caolan McNamara <caolanm@redhat.com> - 1.2.8-8
 - Resolves: rhbz#509882 ignore an empty LANGUAGE variable
 
 * Fri Jun 26 2009 Caolan McNamara <caolanm@redhat.com> - 1.2.8-7

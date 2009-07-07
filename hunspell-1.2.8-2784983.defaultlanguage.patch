@@ -47,7 +47,7 @@ diff -ru hunspell-1.2.8.orig/src/tools/hunspell.cxx hunspell-1.2.8/src/tools/hun
  	textdomain("hunspell");
          ui_enc = nl_langinfo(CODESET);
  #endif
-@@ -1515,13 +1514,26 @@
+@@ -1557,13 +1556,26 @@
  	
  	if (! dicname) {
  		if (! (dicname=getenv("DICTIONARY"))) {
@@ -63,8 +63,8 @@ diff -ru hunspell-1.2.8.orig/src/tools/hunspell.cxx hunspell-1.2.8/src/tools/hun
 +			 * LANG
 +			*/
 +			const char *tests[] = { "LANGUAGE", "LC_ALL", "LC_MESSAGES", "LANG" };
-+			for (int i = 0; i < sizeof(tests) / sizeof(const char*); ++i) {
-+				if ((dicname=getenv(tests[i]))) {
++			for (size_t i = 0; i < sizeof(tests) / sizeof(const char*); ++i) {
++				if ((dicname=getenv(tests[i])) && strcmp(dicname, "") != 0) {
 +					dicname = mystrdup(dicname);
 +					char * dot = strchr(dicname, '.');
 +					if (dot) *dot = '\0';
@@ -81,7 +81,7 @@ diff -ru hunspell-1.2.8.orig/src/tools/hunspell.cxx hunspell-1.2.8/src/tools/hun
  		            dicname=mystrdup(DEFAULTDICNAME);
  			}
  		} else {
-@@ -1535,6 +1544,12 @@
+@@ -1577,6 +1589,12 @@
  	path = add(add(add(add(path, HOME), DIRSEP), USEROOODIR), PATHSEP);
  	path = add(path, OOODIR);
  
@@ -94,7 +94,7 @@ diff -ru hunspell-1.2.8.orig/src/tools/hunspell.cxx hunspell-1.2.8/src/tools/hun
  	if (!privdicname) privdicname = mystrdup(getenv("WORDLIST"));
  
          int diclen = strlen(dicname);
-@@ -1544,9 +1559,6 @@
+@@ -1586,9 +1604,6 @@
  	char * dic = search(path, dicname, ".dic");
  	if (aff && dic) {
  		if (showpath) {
@@ -104,7 +104,7 @@ diff -ru hunspell-1.2.8.orig/src/tools/hunspell.cxx hunspell-1.2.8/src/tools/hun
  			fprintf(stderr, gettext("LOADED DICTIONARY:\n%s\n%s\n"), aff, dic);
  		}
  		pMS[0] = new Hunspell(aff, dic, key);
-@@ -1569,7 +1581,7 @@
+@@ -1611,7 +1626,7 @@
                      } else if (dic) pMS[dmax-1]->add_dic(dic);
  		}
  	} else {
