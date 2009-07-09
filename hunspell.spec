@@ -52,8 +52,11 @@ autoconf
 sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
 for i in AUTHORS.myspell; do
-    iconv -f ISO-8859-1 -t UTF-8 $i > $i.new
+  if ! iconv -f utf-8 -t utf-8 -o /dev/null $i > /dev/null 2>&1; then
+    iconv -f ISO-8859-2 -t UTF-8 $i > $i.new
+    touch -r $i $i.new
     mv -f $i.new $i
+  fi
 done
 make %{?_smp_mflags}
 
