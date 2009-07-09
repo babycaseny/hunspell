@@ -1,7 +1,7 @@
 Name:      hunspell
 Summary:   A spell checker and morphological analyzer library
 Version:   1.2.8
-Release:   8%{?dist}
+Release:   9%{?dist}
 Source0:   http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Source1:   http://people.debian.org/~agmartin/misc/ispellaff2myspell
 Source2:   http://people.redhat.com/caolanm/hunspell/wordlist2hunspell
@@ -111,6 +111,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/hunspell.3.gz
 
 %changelog
+* Thu Jul 09 2009 Caolan McNamara <caolanm@redhat.com> - 1.2.8-9
+- fix up rpmlint warnings
+
 * Tue Jul 07 2009 Caolan McNamara <caolanm@redhat.com> - 1.2.8-8
 - Resolves: rhbz#509882 ignore an empty LANGUAGE variable
 
