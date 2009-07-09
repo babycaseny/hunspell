@@ -87,6 +87,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/hunspell
 %{_mandir}/man1/hunspell.1.gz
 %{_mandir}/man4/hunspell.4.gz
+%dir %{_mandir}/hu
+%dir %{_mandir}/hu/man1
+%dir %{_mandir}/hu/man4
 %lang(hu) %{_mandir}/hu/man1/hunspell.1.gz
 %lang(hu) %{_mandir}/hu/man4/hunspell.4.gz
 
@@ -112,6 +115,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %changelog
 * Thu Jul 09 2009 Caolan McNamara <caolanm@redhat.com> - 1.2.8-9
+- Resolves: rhbz#510360 unowned dirs
 - fix up rpmlint warnings
 
 * Tue Jul 07 2009 Caolan McNamara <caolanm@redhat.com> - 1.2.8-8
