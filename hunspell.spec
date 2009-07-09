@@ -44,13 +44,15 @@ EOF
 chmod +x %{__perl_requires}
 
 %build
-libtoolize --automake --force
 aclocal -I m4
+libtoolize --force --copy
+automake --add-missing --copy
 autoconf
-automake
-%configure --disable-static  --with-ui --with-readline
-for i in man/*.? man/hu/*.?; do
-    iconv -f ISO-8859-2 -t UTF-8 $i > $i.new
+%configure --disable-rpath --disable-static  --with-ui --with-readline
+sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
+sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
+for i in AUTHORS.myspell; do
+    iconv -f ISO-8859-1 -t UTF-8 $i > $i.new
     mv -f $i.new $i
 done
 make %{?_smp_mflags}
@@ -58,7 +60,6 @@ make %{?_smp_mflags}
 %install
 rm -rf $RPM_BUILD_ROOT
 make DESTDIR=$RPM_BUILD_ROOT install
-%find_lang %{name}
 rm -f $RPM_BUILD_ROOT/%{_libdir}/*.a
 rm -f $RPM_BUILD_ROOT/%{_libdir}/*.la
 rm -f $RPM_BUILD_ROOT/%{_bindir}/example
@@ -69,6 +70,7 @@ install -m 755 src/tools/makealias $RPM_BUILD_ROOT/%{_bindir}/makealias
 install -m 755 src/tools/wordforms $RPM_BUILD_ROOT/%{_bindir}/wordforms
 install -m 755 %{SOURCE1} $RPM_BUILD_ROOT/%{_bindir}/ispellaff2myspell
 install -m 755 %{SOURCE2} $RPM_BUILD_ROOT/%{_bindir}/wordlist2hunspell
+%find_lang %{name}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
