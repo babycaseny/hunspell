@@ -1,7 +1,7 @@
 Name:      hunspell
 Summary:   A spell checker and morphological analyzer library
 Version:   1.2.8
-Release:   9%{?dist}
+Release:   10%{?dist}
 Source0:   http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Source1:   http://people.debian.org/~agmartin/misc/ispellaff2myspell
 Source2:   http://people.redhat.com/caolanm/hunspell/wordlist2hunspell
@@ -57,8 +57,14 @@ for i in AUTHORS.myspell; do
     touch -r $i $i.new
     mv -f $i.new $i
   fi
+  tr -d '\r' < $i > $i.new
+  touch -r $i $i.new
+  mv -f $i.new $i
 done
 make %{?_smp_mflags}
+
+%check
+make -C tests check-TESTS
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -117,6 +123,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/hunspell.3.gz
 
 %changelog
+* Wed Jul 22 2009 Caolan McNamara <caolanm@redhat.com> - 1.2.8-10
+- run tests in check
+
 * Thu Jul 09 2009 Caolan McNamara <caolanm@redhat.com> - 1.2.8-9
 - Resolves: rhbz#510360 unowned dirs
 - fix up rpmlint warnings
