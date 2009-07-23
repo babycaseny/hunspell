@@ -13,6 +13,7 @@ BuildRequires: libtool, ncurses-devel
 Patch1:    hunspell-1.2.7-2314461.ispell-alike.patch
 Patch2:    hunspell-1.2.8-2784983.defaultlanguage.patch
 Patch3:    hunspell-1.2.8-2812045.warnings.fortify.patch
+Patch4:    hunspell-1.2.8-2826164.fixtests.patch
 
 %description
 Hunspell is a spell checker and morphological analyzer library and program 
@@ -33,6 +34,7 @@ Includes and definitions for developing with hunspell
 %patch1 -p1 -b .ispell-alike.patch
 %patch2 -p1 -b .defaultlanguage.patch
 %patch3 -p1 -b .warnings.fortify.patch
+%patch4 -p1 -b .fixtests.patch
 # Filter unwanted Requires for the "use explicitely" string in ispellaff2myspell
 cat << \EOF > %{name}-req
 #!/bin/sh
@@ -123,7 +125,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/hunspell.3.gz
 
 %changelog
-* Wed Jul 22 2009 Caolan McNamara <caolanm@redhat.com> - 1.2.8-10
+* Thu Jul 23 2009 Caolan McNamara <caolanm@redhat.com> - 1.2.8-10
 - run tests in check
 
 * Thu Jul 09 2009 Caolan McNamara <caolanm@redhat.com> - 1.2.8-9
