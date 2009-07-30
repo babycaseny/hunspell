@@ -74,7 +74,7 @@ diff -ru hunspell-1.2.8.orig/src/tools/hunspell.cxx hunspell-1.2.8/src/tools/hun
 +				}
 +			}
 +
-+			if (strcmp(dicname, "C") == 0)
++			if ((strcmp(dicname, "C") == 0) || (strcmp(dicname, "POSIX") == 0))
 +			    dicname=mystrdup("en_US");
 +
 +			if (! dicname) {
