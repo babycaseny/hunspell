@@ -10,7 +10,7 @@
 
 #include "base/stl_util-inl.h"
 #include "base/string_piece.h"
-#include "chrome/third_party/hunspell/google/bdict_reader.h"
+#include "third_party/hunspell/google/bdict_reader.h"
 #endif
 
 enum flag { FLAG_CHAR, FLAG_LONG, FLAG_NUM, FLAG_UNI };

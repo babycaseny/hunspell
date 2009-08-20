@@ -1,9 +1,8 @@
 // Copyright 2008 Google Inc. All Rights Reserved.
 
-#include "chrome/third_party/hunspell/google/bdict_reader.h"
+#include "third_party/hunspell/google/bdict_reader.h"
 
 #include "base/logging.h"
-#include "chrome/third_party/hunspell/google/bdict.h"
 
 namespace hunspell {
 

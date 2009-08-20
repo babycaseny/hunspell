@@ -29,7 +29,7 @@
 #define _MYSPELLMGR_HXX_
 
 #ifdef HUNSPELL_CHROME_CLIENT
-#include "chrome/third_party/hunspell/google/bdict_reader.h"
+#include "third_party/hunspell/google/bdict_reader.h"
 #endif
 
 #ifdef W32

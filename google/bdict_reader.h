@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "base/basictypes.h"
-#include "chrome/third_party/hunspell/google/bdict.h"
+#include "third_party/hunspell/google/bdict.h"
 
 namespace hunspell {
 
