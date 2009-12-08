@@ -1,7 +1,7 @@
 Name:      hunspell
 Summary:   A spell checker and morphological analyzer library
 Version:   1.2.8
-Release:   12%{?dist}
+Release:   13%{?dist}
 Source0:   http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Source1:   http://people.debian.org/~agmartin/misc/ispellaff2myspell
 Source2:   http://people.redhat.com/caolanm/hunspell/wordlist2hunspell
@@ -14,6 +14,7 @@ Patch1:    hunspell-1.2.7-2314461.ispell-alike.patch
 Patch2:    hunspell-1.2.8-2784983.defaultlanguage.patch
 Patch3:    hunspell-1.2.8-2812045.warnings.fortify.patch
 Patch4:    hunspell-1.2.8-2826164.fixtests.patch
+Patch5:    hunspell-1.2.8-2910695.nohome.patch
 
 %description
 Hunspell is a spell checker and morphological analyzer library and program 
@@ -35,6 +36,7 @@ Includes and definitions for developing with hunspell
 %patch2 -p1 -b .defaultlanguage.patch
 %patch3 -p1 -b .warnings.fortify.patch
 %patch4 -p1 -b .fixtests.patch
+%patch5 -p1 -b .nohome.patch
 # Filter unwanted Requires for the "use explicitely" string in ispellaff2myspell
 cat << \EOF > %{name}-req
 #!/bin/sh
@@ -125,6 +127,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/hunspell.3.gz
 
 %changelog
+* Tue Dec 08 2009 Caolan McNamara <caolanm@redhat.com> - 1.2.8-13
+- Resolves: rhbz#544372 survive having no HOME
+
 * Thu Jul 30 2009 Caolan McNamara <caolanm@redhat.com> - 1.2.8-12
 - handle some other interesting edge-cases
 
