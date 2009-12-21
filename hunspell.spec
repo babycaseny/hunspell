@@ -1,7 +1,7 @@
 Name:      hunspell
 Summary:   A spell checker and morphological analyzer library
 Version:   1.2.8
-Release:   13%{?dist}
+Release:   14%{?dist}
 Source0:   http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Source1:   http://people.debian.org/~agmartin/misc/ispellaff2myspell
 Source2:   http://people.redhat.com/caolanm/hunspell/wordlist2hunspell
@@ -78,11 +78,11 @@ rm -f $RPM_BUILD_ROOT/%{_libdir}/*.la
 rm -f $RPM_BUILD_ROOT/%{_bindir}/example
 mkdir $RPM_BUILD_ROOT/%{_datadir}/myspell
 mv $RPM_BUILD_ROOT/%{_includedir}/*munch* $RPM_BUILD_ROOT/%{_includedir}/%{name}
-install -m 755 src/tools/affixcompress $RPM_BUILD_ROOT/%{_bindir}/affixcompress
-install -m 755 src/tools/makealias $RPM_BUILD_ROOT/%{_bindir}/makealias
-install -m 755 src/tools/wordforms $RPM_BUILD_ROOT/%{_bindir}/wordforms
-install -m 755 %{SOURCE1} $RPM_BUILD_ROOT/%{_bindir}/ispellaff2myspell
-install -m 755 %{SOURCE2} $RPM_BUILD_ROOT/%{_bindir}/wordlist2hunspell
+install -p -m 755 src/tools/affixcompress $RPM_BUILD_ROOT/%{_bindir}/affixcompress
+install -p -m 755 src/tools/makealias $RPM_BUILD_ROOT/%{_bindir}/makealias
+install -p -m 755 src/tools/wordforms $RPM_BUILD_ROOT/%{_bindir}/wordforms
+install -p -m 755 %{SOURCE1} $RPM_BUILD_ROOT/%{_bindir}/ispellaff2myspell
+install -p -m 755 %{SOURCE2} $RPM_BUILD_ROOT/%{_bindir}/wordlist2hunspell
 %find_lang %{name}
 
 %clean
@@ -127,6 +127,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/hunspell.3.gz
 
 %changelog
+* Mon Dec 21 2009 Caolan McNamara <caolanm@redhat.com> - 1.2.8-14
+- Preserve timestamps
+
 * Tue Dec 08 2009 Caolan McNamara <caolanm@redhat.com> - 1.2.8-13
 - Resolves: rhbz#544372 survive having no HOME
 
