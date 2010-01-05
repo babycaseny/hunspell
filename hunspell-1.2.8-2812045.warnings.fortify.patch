@@ -12,6 +12,15 @@ diff -ru hunspell-1.2.8.orig/src/hunspell/affixmgr.cxx hunspell-1.2.8/src/hunspe
              } else {
                  rv=NULL;
              }
+@@ -3234,7 +3234,7 @@
+ }
+ 
+ // return the value of suffix
+-const int AffixMgr::have_contclass()
++int AffixMgr::have_contclass()
+ {
+   return havecontclass;
+ }
 @@ -4276,7 +4276,7 @@
              if (strip[i] == cond[j]) in = 1;
            } while ((j < (condl - 1)) && (cond[j] != ']'));
@@ -200,3 +209,15 @@ diff -ru hunspell-1.2.8.orig/src/hunspell/suggestmgr.cxx hunspell-1.2.8/src/huns
          c[i*(n+1) + j] = c[(i-1)*(n+1) + j-1]+1;
          b[i*(n+1) + j] = LCS_UPLEFT;
        } else if (c[(i-1)*(n+1) + j] >= c[i*(n+1) + j-1]) {
+diff -ru hunspell-1.2.8.orig/src/hunspell/affixmgr.hxx hunspell-1.2.8/src/hunspell/affixmgr.hxx
+--- hunspell-1.2.8.orig/src/hunspell/affixmgr.hxx	2010-01-05 11:21:06.000000000 +0000
++++ hunspell-1.2.8/src/hunspell/affixmgr.hxx	2008-10-30 20:28:59.000000000 +0000
+@@ -192,7 +192,7 @@
+   const char *        get_suffix();
+   const char *        get_derived();
+   const char *        get_version();
+-  const int           have_contclass();
++  int                 have_contclass();
+   int                 get_utf8();
+   int                 get_complexprefixes();
+   char *              get_suffixed(char );

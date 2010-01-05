@@ -1,7 +1,7 @@
 Name:      hunspell
 Summary:   A spell checker and morphological analyzer library
 Version:   1.2.8
-Release:   14%{?dist}
+Release:   15%{?dist}
 Source0:   http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Source1:   http://people.debian.org/~agmartin/misc/ispellaff2myspell
 Source2:   http://people.redhat.com/caolanm/hunspell/wordlist2hunspell
@@ -127,6 +127,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/hunspell.3.gz
 
 %changelog
+* Tue Jan 05 2010 Caolan McNamara <caolanm@redhat.com> - 1.2.8-15
+- Remove bad const warnings
+
 * Mon Dec 21 2009 Caolan McNamara <caolanm@redhat.com> - 1.2.8-14
 - Preserve timestamps
 
