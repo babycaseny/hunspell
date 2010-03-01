@@ -1,7 +1,7 @@
 Name:      hunspell
 Summary:   A spell checker and morphological analyzer library
 Version:   1.2.8
-Release:   16%{?dist}
+Release:   17%{?dist}
 Source0:   http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Source1:   http://people.debian.org/~agmartin/misc/ispellaff2myspell
 Source2:   http://people.redhat.com/caolanm/hunspell/wordlist2hunspell
@@ -102,9 +102,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/hunspell
 %{_mandir}/man1/hunspell.1.gz
 %{_mandir}/man4/hunspell.4.gz
-%dir %{_mandir}/hu
-%dir %{_mandir}/hu/man1
-%dir %{_mandir}/hu/man4
 %lang(hu) %{_mandir}/hu/man1/hunspell.1.gz
 %lang(hu) %{_mandir}/hu/man4/hunspell.4.gz
 
@@ -129,6 +126,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/hunspell.3.gz
 
 %changelog
+* Mon Mar 01 2010 Caolan McNamara <caolanm@redhat.com> - 1.2.8-17
+- Resolves: rhbz#569449 hu man dir now exists in filesystem
+
 * Mon Jan 18 2010 Caolan McNamara <caolanm@redhat.com> - 1.2.8-16
 - Resolves: rhbz#554876 fix suggestmgr crash
 
