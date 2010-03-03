@@ -1,21 +1,13 @@
 Name:      hunspell
 Summary:   A spell checker and morphological analyzer library
-Version:   1.2.8
-Release:   17%{?dist}
-Source0:   http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
-Source1:   http://people.debian.org/~agmartin/misc/ispellaff2myspell
-Source2:   http://people.redhat.com/caolanm/hunspell/wordlist2hunspell
+Version:   1.2.9
+Release:   1%{?dist}
+Source:    http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Group:     System Environment/Libraries
 URL:       http://hunspell.sourceforge.net/
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 License:   LGPLv2+ or GPLv2+ or MPLv1.1
-BuildRequires: libtool, ncurses-devel
-Patch1:    hunspell-1.2.7-2314461.ispell-alike.patch
-Patch2:    hunspell-1.2.8-2784983.defaultlanguage.patch
-Patch3:    hunspell-1.2.8-2812045.warnings.fortify.patch
-Patch4:    hunspell-1.2.8-2826164.fixtests.patch
-Patch5:    hunspell-1.2.8-2910695.nohome.patch
-Patch6:    hunspell-1.2.8-2934195.suggestmgr.patch
+BuildRequires: ncurses-devel
 
 %description
 Hunspell is a spell checker and morphological analyzer library and program 
@@ -33,40 +25,9 @@ Includes and definitions for developing with hunspell
 
 %prep
 %setup -q
-%patch1 -p1 -b .ispell-alike.patch
-%patch2 -p1 -b .defaultlanguage.patch
-%patch3 -p1 -b .warnings.fortify.patch
-%patch4 -p1 -b .fixtests.patch
-%patch5 -p1 -b .nohome.patch
-%patch6 -p1 -b .suggestmgr.patch
-# Filter unwanted Requires for the "use explicitely" string in ispellaff2myspell
-cat << \EOF > %{name}-req
-#!/bin/sh
-%{__perl_requires} $* |\
-  sed -e '/perl(explicitely)/d'
-EOF
-
-%define __perl_requires %{_builddir}/%{name}-%{version}/%{name}-req
-chmod +x %{__perl_requires}
 
 %build
-aclocal -I m4
-libtoolize --force --copy
-automake --add-missing --copy
-autoconf
 %configure --disable-rpath --disable-static  --with-ui --with-readline
-sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
-sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
-for i in AUTHORS.myspell; do
-  if ! iconv -f utf-8 -t utf-8 -o /dev/null $i > /dev/null 2>&1; then
-    iconv -f ISO-8859-2 -t UTF-8 $i > $i.new
-    touch -r $i $i.new
-    mv -f $i.new $i
-  fi
-  tr -d '\r' < $i > $i.new
-  touch -r $i $i.new
-  mv -f $i.new $i
-done
 make %{?_smp_mflags}
 
 %check
@@ -77,14 +38,7 @@ rm -rf $RPM_BUILD_ROOT
 make DESTDIR=$RPM_BUILD_ROOT install
 rm -f $RPM_BUILD_ROOT/%{_libdir}/*.a
 rm -f $RPM_BUILD_ROOT/%{_libdir}/*.la
-rm -f $RPM_BUILD_ROOT/%{_bindir}/example
 mkdir $RPM_BUILD_ROOT/%{_datadir}/myspell
-mv $RPM_BUILD_ROOT/%{_includedir}/*munch* $RPM_BUILD_ROOT/%{_includedir}/%{name}
-install -p -m 755 src/tools/affixcompress $RPM_BUILD_ROOT/%{_bindir}/affixcompress
-install -p -m 755 src/tools/makealias $RPM_BUILD_ROOT/%{_bindir}/makealias
-install -p -m 755 src/tools/wordforms $RPM_BUILD_ROOT/%{_bindir}/wordforms
-install -p -m 755 %{SOURCE1} $RPM_BUILD_ROOT/%{_bindir}/ispellaff2myspell
-install -p -m 755 %{SOURCE2} $RPM_BUILD_ROOT/%{_bindir}/wordlist2hunspell
 %find_lang %{name}
 
 %clean
@@ -126,6 +80,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/hunspell.3.gz
 
 %changelog
+* Wed Mar 03 2010 Caolan McNamara <caolanm@redhat.com> - 1.2.9-1
+- latest version, drop all upstreamed patchs
+
 * Mon Mar 01 2010 Caolan McNamara <caolanm@redhat.com> - 1.2.8-17
 - Resolves: rhbz#569449 hu man dir now exists in filesystem
 
