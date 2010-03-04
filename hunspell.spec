@@ -1,13 +1,15 @@
 Name:      hunspell
 Summary:   A spell checker and morphological analyzer library
 Version:   1.2.9
-Release:   1%{?dist}
+Release:   2%{?dist}
 Source:    http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Group:     System Environment/Libraries
 URL:       http://hunspell.sourceforge.net/
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 License:   LGPLv2+ or GPLv2+ or MPLv1.1
 BuildRequires: ncurses-devel
+
+Patch0:    hunspell-1.2.9-stacksmash.patch
 
 %description
 Hunspell is a spell checker and morphological analyzer library and program 
@@ -25,6 +27,7 @@ Includes and definitions for developing with hunspell
 
 %prep
 %setup -q
+%patch0 -p1 -b .stacksmash
 
 %build
 %configure --disable-rpath --disable-static  --with-ui --with-readline
@@ -80,6 +83,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/hunspell.3.gz
 
 %changelog
+* Thu Mar 04 2010 Caolan McNamara <caolanm@redhat.com> - 1.2.9-2
+- Resolves: ooo#107768 hunspell-1.2.9-stacksmash.patch
+
 * Wed Mar 03 2010 Caolan McNamara <caolanm@redhat.com> - 1.2.9-1
 - latest version, drop all upstreamed patchs
 
