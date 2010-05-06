@@ -1,0 +1,12 @@
+diff -ru hunspell-1.2.10.orig/src/hunspell/affixmgr.cxx hunspell-1.2.10/src/hunspell/affixmgr.cxx
+--- hunspell-1.2.10.orig/src/hunspell/affixmgr.cxx	2010-05-06 09:39:14.000000000 +0100
++++ hunspell-1.2.10/src/hunspell/affixmgr.cxx	2010-05-06 09:45:42.000000000 +0100
+@@ -3833,7 +3833,7 @@
+                   case 1: {
+ 			    int setn = 0;
+                             maptable[j].len = strlen(piece);
+-                            maptable[j].set = (char **) malloc(maptable[j].len * sizeof(int));
++                            maptable[j].set = (char **) malloc(maptable[j].len * sizeof(char*));
+                             if (!maptable[j].set) return 1;
+ 			    for (int k = 0; k < maptable[j].len; k++) {
+ 				int chl = 1;

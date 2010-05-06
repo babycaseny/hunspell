@@ -1,13 +1,14 @@
 Name:      hunspell
 Summary:   A spell checker and morphological analyzer library
 Version:   1.2.10
-Release:   1%{?dist}
+Release:   2%{?dist}
 Source:    http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Group:     System Environment/Libraries
 URL:       http://hunspell.sourceforge.net/
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 License:   LGPLv2+ or GPLv2+ or MPLv1.1
 BuildRequires: ncurses-devel
+Patch0:    hunspell-1.2.10.wrongmalloc.patch
 
 %description
 Hunspell is a spell checker and morphological analyzer library and program 
@@ -25,6 +26,7 @@ Includes and definitions for developing with hunspell
 
 %prep
 %setup -q
+%patch0 -p1 -b .wrongmalloc.patch
 
 %build
 %configure --disable-rpath --disable-static  --with-ui --with-readline
@@ -80,6 +82,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/hunspell.3.gz
 
 %changelog
+* Thu May 06 2010 Caolan McNamara <caolanm@redhat.com> - 1.2.10-2
+- Resolves: rhbz#589326 hunspell-1.2.10.wrongmalloc.patch
+
 * Fri Apr 30 2010 Caolan McNamara <caolanm@redhat.com> - 1.2.10-1
 - latest version
 
