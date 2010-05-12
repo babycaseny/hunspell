@@ -1,14 +1,14 @@
 13
-0/N	[NUM]
-1/N	[NUM]
-2/N	[NUM]
-3/N	[NUM]
-4/N	[NUM]
-5/N	[NUM]
-6/N	[NUM]
-7/N	[NUM]
-8/N	[NUM]
-9/N	[NUM]
-./.	[DOT]
-%/%	[PERCENT_SIGN]
-‰/%	[PER_MILLE_SIGN]
+0/N	po:num
+1/N	po:num
+2/N	po:num
+3/N	po:num
+4/N	po:num
+5/N	po:num
+6/N	po:num
+7/N	po:num
+8/N	po:num
+9/N	po:num
+./.	po:sign_dot
+%/%	po:sign_percent
+‰/%	po:sign_per_mille

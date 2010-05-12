@@ -1,8 +1,8 @@
 > ouro
-[stem_1]ouro
+analyze(ouro) = [stem_1] ouro:ts 
 > metouro
-affix_2/ouro[stem_1]
+analyze(metouro) = affix_2/ ouro:ts [stem_1]
 > tekmetouro
-affix_1/affix_2/ouro[stem_1]
+analyze(tekmetouro) = affix_1/ affix_2/ ouro:ts [stem_1]
 > ouro_test_
-[stem_1]/suffix_1
+analyze(ouro_test_) = [stem_1] ouro:ts /suffix_1 

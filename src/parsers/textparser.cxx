@@ -99,9 +99,11 @@ void TextParser::init(const char * wordchars)
 	token = 0;
 	state = 0;
         utf8 = 0;
+        checkurl = 0;
 	unsigned int j;
-	for (j = 0; j < 256; j++)
+	for (j = 0; j < 256; j++) {
 		wordcharacters[j] = 0;
+	}
         if (!wordchars) wordchars = "qwertzuiopasdfghjklyxcvbnmQWERTZUIOPASDFGHJKLYXCVBNM";
 	for (j = 0; j < strlen(wordchars); j++) {
 		wordcharacters[(wordchars[j] + 256) % 256] = 1;
@@ -118,6 +120,7 @@ void TextParser::init(unsigned short * wc, int len)
 	token = 0;
 	state = 0;
 	utf8 = 1;
+	checkurl = 0;
         wordchars_utf16 = wc;
         wclen = len;
 }
@@ -141,6 +144,7 @@ void TextParser::put_line(char * word)
 	strcpy(line[actual], word);
 	token = 0;
 	head = 0;
+	check_urls();
 }
 
 char * TextParser::get_prevline(int n)
@@ -175,10 +179,8 @@ char * TextParser::next_token()
 				head += strlen(latin1);
 			} else if (! is_wordchar(line[actual] + head)) {
 				state = 0;
-				char * t = (char *) malloc(head - token + 1);
-				t[head - token] = '\0';
-				if (t) return strncpy(t, line[actual] + token, head - token); 
-				fprintf(stderr,"Error - Insufficient Memory\n");
+				char * t = alloc_token(token, &head);
+				if (t) return t;
 			}
 			break;
 		}
@@ -202,4 +204,88 @@ int TextParser::change_token(const char * word)
 		return 1;
 	}
 	return 0;
+}
+
+void TextParser::check_urls()
+{
+	int url_state = 0;
+	int url_head = 0;
+	int url_token = 0;
+	int url = 0;
+	for (;;) {
+		switch (url_state)
+		{
+		case 0: // non word chars
+			if (is_wordchar(line[actual] + url_head)) {
+				url_state = 1;
+				url_token = url_head;
+			// Unix path
+			} else if (*(line[actual] + url_head) == '/') {
+				url_state = 1;
+				url_token = url_head;
+				url = 1;
+			}
+			break;
+		case 1: // wordchar
+			char ch = *(line[actual] + url_head);
+ 			// e-mail address
+			if ((ch == '@') ||
+			    // MS-DOS, Windows path
+			    (strncmp(line[actual] + url_head, ":\\", 2) == 0) ||
+			    // URL
+			    (strncmp(line[actual] + url_head, "://", 3) == 0)) {
+				url = 1;
+			} else if (! (is_wordchar(line[actual] + url_head) ||
+			  (ch == '-') || (ch == '_') || (ch == '\\') ||
+			  (ch == '.') || (ch == ':') || (ch == '/') ||
+			  (ch == '~') || (ch == '%') || (ch == '*') ||
+			  (ch == '$') || (ch == '[') || (ch == ']') ||
+			  (ch == '?') || (ch == '!') ||
+			  ((ch >= '0') && (ch <= '9')))) {
+				url_state = 0;
+				if (url == 1) {
+					for (int i = url_token; i < url_head; i++) {
+						*(urlline + i) = 1;
+					}
+				}
+				url = 0;
+			}
+			break;
+		}
+		*(urlline + url_head) = 0;
+                if (next_char(line[actual], &url_head)) return;
+	}
+}
+
+int TextParser::get_url(int token_pos, int * head)
+{
+	for (int i = *head; urlline[i] && *(line[actual]+i); i++, (*head)++);
+	return checkurl ? 0 : urlline[token_pos];
+}
+
+void TextParser::set_url_checking(int check)
+{
+	checkurl = check;
+}
+
+
+char * TextParser::alloc_token(int token, int * head)
+{
+    if (get_url(token, head)) return NULL;
+    char * t = (char *) malloc(*head - token + 1);
+    if (t) {
+        t[*head - token] = '\0';
+        strncpy(t, line[actual] + token, *head - token);
+    	// remove colon for Finnish and Swedish language
+        if (t[*head - token - 1] == ':') {
+    	    t[*head - token - 1] = '\0';
+    	    if (!t[0]) {
+    		free(t);
+    		return NULL;
+    	    }
+    	}
+        return t;
+    }
+    fprintf(stderr,"Error - Insufficient Memory\n");
+    return NULL;
 }

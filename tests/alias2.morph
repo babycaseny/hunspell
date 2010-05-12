@@ -1,8 +1,12 @@
 > foo
-foo[footype]
+analyze(foo) =  st:foo po:noun xx:other_data
+stem(foo) = foo
 > foox
-foo[footype]/affix_x
+analyze(foox) =  st:foo po:noun xx:other_data is:affix_x
+stem(foox) = foo
 > fooy
-foo[footype]/affix_y
+analyze(fooy) =  st:foo po:noun xx:other_data ds:affix_y
+stem(fooy) = fooy
 > fooyx
-foo[footype]/affix_y/affix_x
+analyze(fooyx) =  st:foo po:noun xx:other_data ds:affix_y is:affix_x
+stem(fooyx) = fooy

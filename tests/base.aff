@@ -1,9 +1,9 @@
 # OpenOffice.org's en_US.aff file
 
 SET ISO8859-1
-TRY esianrtolcdugmphbyfvkwzESIANRTOLCDUGMPHBYFVKWZ'
+TRY esianrtolcdugmphbyfvkwz'
 
-WORDCHARS '
+WORDCHARS .'
 
 PFX A Y 1
 PFX A   0     re         .

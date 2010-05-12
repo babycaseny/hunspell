@@ -1,10 +1,13 @@
 > bar
-bar<BAR<ZERO>>
-bar<BAR>
-bar<BAR<ZERODERIV><ZERO>>
-bar<BAR<ZERODERIV>>
+analyze(bar) =  st:bar <BAR <ZERO>>
+analyze(bar) =  st:bar <BAR >
+analyze(bar) =  st:bar <BAR <ZERODERIV> <ZERO>>
+analyze(bar) =  st:bar <BAR <ZERODERIV> >
+stem(bar) = bar
 > foo
-foo<FOO>
+analyze(foo) =  st:foo <FOO >
+stem(foo) = foo
 > barbaz
-bar<BAR<DERIV><ZERO>>
-bar<BAR<DERIV>>
+analyze(barbaz) =  st:bar <BAR <DERIV> <ZERO>>
+analyze(barbaz) =  st:bar <BAR <DERIV> >
+stem(barbaz) = bar

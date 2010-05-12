@@ -1,8 +1,12 @@
 > nagy
-nagy[MN]
+analyze(nagy) =  st:nagy po:adj
+stem(nagy) = nagy
 > nagyobb
-nagy[MN]+COMPARATIVE
+analyze(nagyobb) =  st:nagy po:adj is:COMPARATIVE
+stem(nagyobb) = nagy
 > legnagyobb
-nagy[MN]+SUPERLATIVE
+analyze(legnagyobb) =  fl:A st:nagy po:adj is:SUPERLATIVE
+stem(legnagyobb) = nagy
 > legeslegnagyobb
-nagy[MN]+SUPERSUPERLATIVE
+analyze(legeslegnagyobb) =  fl:B st:nagy po:adj is:SUPERSUPERLATIVE
+stem(legeslegnagyobb) = nagy

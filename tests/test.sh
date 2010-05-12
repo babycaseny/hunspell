@@ -33,16 +33,16 @@ fi
 
 shopt -s expand_aliases
 
-alias hunspell='../src/tools/hunspell'
-alias hunmorph='../src/tools/hunmorph'
+alias hunspell='../libtool --mode=execute -dlopen ../src/hunspell/.libs/libhunspell*.la ../src/tools/hunspell'
+alias analyze='../libtool --mode=execute -dlopen ../src/hunspell/.libs/libhunspell*.la ../src/tools/analyze'
 
 if [ "$VALGRIND" != "" ]; then
   rm -f $TEMPDIR/test.pid*
   if [ ! -d $TEMPDIR/badlogs ]; then
     mkdir $TEMPDIR/badlogs
   fi
-  alias hunspell='valgrind --tool=$VALGRIND --leak-check=yes --show-reachable=yes --log-file=$TEMPDIR/test ../src/tools/hunspell'
-  alias hunmorph='valgrind --tool=$VALGRIND --leak-check=yes --show-reachable=yes --log-file=$TEMPDIR/test ../src/tools/hunmorph'
+  alias hunspell='valgrind --tool=$VALGRIND --leak-check=yes --show-reachable=yes --log-file=$TEMPDIR/test.pid ../src/tools/.libs/lt-hunspell'
+  alias analyze='valgrind --tool=$VALGRIND --leak-check=yes --show-reachable=yes --log-file=$TEMPDIR/test.pid ../src/tools/.libs/lt-analyze'
 fi
 
 # Tests good words
@@ -78,9 +78,9 @@ fi
 check_valgrind_log "bad words"
 
 # Tests morphological analysis
-if test -f $TESTDIR/$NAME.morph -a -f hunmorph; then
+if test -f $TESTDIR/$NAME.morph; then
     sed 's/	$//' $TESTDIR/$NAME.good >$TEMPDIR/$NAME.good
-    hunmorph $TESTDIR/$NAME.aff $TESTDIR/$NAME.dic $TEMPDIR/$NAME.good >$TEMPDIR/$NAME.morph
+    analyze $TESTDIR/$NAME.aff $TESTDIR/$NAME.dic $TEMPDIR/$NAME.good >$TEMPDIR/$NAME.morph
     if ! cmp $TEMPDIR/$NAME.morph $TESTDIR/$NAME.morph >/dev/null; then
         echo "============================================="
         echo "Fail in $NAME.morph. Bad analysis?"
@@ -95,7 +95,7 @@ check_valgrind_log "morphological analysis"
 
 # Tests suggestions
 if test -f $TESTDIR/$NAME.sug; then
-    hunspell -d $TESTDIR/$NAME <$TESTDIR/$NAME.wrong | tail +2 | grep '^&' | \
+    hunspell $* -a -d $TESTDIR/$NAME <$TESTDIR/$NAME.wrong | grep '^&' | \
         sed 's/^[^:]*: //' >$TEMPDIR/$NAME.sug 
     if ! cmp $TEMPDIR/$NAME.sug $TESTDIR/$NAME.sug >/dev/null; then
         echo "============================================="

@@ -1,14 +1,20 @@
 > drink
-drink[verb]
-drink[noun]
+analyze(drink) =  st:drink po:verb
+analyze(drink) =  st:drink po:noun
+stem(drink) = drink
 > drinks
-drink[verb]+3SGV
-drink[noun]+PL
+analyze(drinks) =  st:drink po:verb is:3SGV
+analyze(drinks) =  st:drink po:noun is:PL
+stem(drinks) = drink
 > drinkable
-drink[verb]+DER_V_ADJ_ABLE
+analyze(drinkable) =  st:drink po:verb ds:DER_V_ADJ_ABLE
+stem(drinkable) = drinkable
 > drinkables
-drink[verb]+DER_V_ADJ_ABLE+PL
+analyze(drinkables) =  st:drink po:verb ds:DER_V_ADJ_ABLE is:PL
+stem(drinkables) = drinkable
 > undrinkable
-prefix_un+drink[verb]+DER_V_ADJ_ABLE
+analyze(undrinkable) = ip:un  st:drink po:verb ds:DER_V_ADJ_ABLE
+stem(undrinkable) = drinkable
 > undrinkables
-prefix_un+drink[verb]+DER_V_ADJ_ABLE+PL
+analyze(undrinkables) = ip:un  st:drink po:verb ds:DER_V_ADJ_ABLE is:PL
+stem(undrinkables) = drinkable
