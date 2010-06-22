@@ -5,6 +5,10 @@
 #include "suggestmgr.hxx"
 #include "langnum.hxx"
 
+#ifdef HUNSPELL_CHROME_CLIENT
+#include "third_party/hunspell/google/bdict_reader.h"
+#endif
+
 #define  SPELL_COMPOUND  (1 << 0)
 #define  SPELL_FORBIDDEN (1 << 1)
 #define  SPELL_ALLCAP    (1 << 2)
@@ -26,7 +30,9 @@ class LIBHUNSPELL_DLL_EXPORTED Hunspell
   HashMgr*        pHMgr[MAXDIC];
   int             maxdic;
   SuggestMgr*     pSMgr;
+#ifndef HUNSPELL_CHROME_CLIENT // We are using BDict instead.
   char *          affixpath;
+#endif
   char *          encoding;
   struct cs_info * csconv;
   int             langnum;
@@ -34,17 +40,28 @@ class LIBHUNSPELL_DLL_EXPORTED Hunspell
   int             complexprefixes;
   char**          wordbreak;
 
+#ifdef HUNSPELL_CHROME_CLIENT
+  // Not owned by us, owned by the Hunspell object.
+  hunspell::BDictReader* bdict_reader;
+#endif
+
 public:
 
   /* Hunspell(aff, dic) - constructor of Hunspell class
    * input: path of affix file and dictionary file
    */
 
+#ifdef HUNSPELL_CHROME_CLIENT
+  Hunspell(const unsigned char* bdict_data, size_t bdict_length);
+#else
   Hunspell(const char * affpath, const char * dpath, const char * key = NULL);
+#endif
   ~Hunspell();
 
+#ifndef HUNSPELL_CHROME_CLIENT
   /* load extra dictionaries (only dic files) */
   int add_dic(const char * dpath, const char * key = NULL);
+#endif
 
   /* spell(word) - spellcheck word
    * output: 0 = bad word, not 0 = good word

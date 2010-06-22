@@ -12,6 +12,98 @@
 
 const w_char W_VLINE = { '\0', '|' };
 
+#ifdef HUNSPELL_CHROME_CLIENT
+namespace {
+// A simple class which creates temporary hentry objects which are available
+// only in a scope. To conceal memory operations from SuggestMgr functions,
+// this object automatically deletes all hentry objects created through
+// CreateScopedHashEntry() calls in its destructor. So, the following snippet
+// raises a memory error.
+//
+//   hentry* bad_copy = NULL;
+//   {
+//     ScopedHashEntryFactory factory;
+//     hentry* scoped_copy = factory.CreateScopedHashEntry(0, source);
+//     ...
+//     bad_copy = scoped_copy;
+//   }
+//   if (bad_copy->word[0])  // memory for scoped_copy has been deleted!
+//
+// As listed in the above snippet, it is simple to use this class.
+// 1. Declare an instance of this ScopedHashEntryFactory, and;
+// 2. Call its CreateHashEntry() member instead of using 'new hentry' or
+//    'operator='.
+//
+class ScopedHashEntryFactory {
+ public:
+  ScopedHashEntryFactory();
+  ~ScopedHashEntryFactory();
+
+  // Creates a temporary copy of the given hentry struct.
+  // The returned copy is available only while this object is available.
+  // NOTE: this function just calls memcpy() in creating a copy of the given
+  // hentry struct, i.e. it does NOT copy objects referred by pointers of the
+  // given hentry struct.
+  hentry* CreateScopedHashEntry(int index, const hentry* source);
+
+ private:
+  // A struct which encapsulates the new hentry struct introduced in hunspell
+  // 1.2.8. For a pointer to an hentry struct 'h', hunspell 1.2.8 stores a word
+  // (including a NUL character) into 'h->word[0]',...,'h->word[h->blen]' even
+  // though arraysize(h->word[]) is 1. Also, it changed 'astr' to a pointer so
+  // it can store affix flags into 'h->astr[0]',...,'h->astr[alen-1]'. To handle
+  // this new hentry struct, we define a struct which combines three values: an
+  // hentry struct 'hentry'; a char array 'word[kMaxWordLen]', and; an unsigned
+  // short value 'astr' so a hentry struct 'h' returned from
+  // CreateScopedHashEntry() satisfies the following equations:
+  //   hentry* h = factory.CreateScopedHashEntry(0, source);
+  //   h->word[0] == ((HashEntryItem*)h)->entry.word[0].
+  //   h->word[1] == ((HashEntryItem*)h)->word[0].
+  //   ...
+  //   h->word[h->blen] == ((HashEntryItem*)h)->word[h->blen-1].
+  //   h->astr[0] == ((HashEntryItem*)h)->astr.
+  // Our BDICT does not use affix flags longer than one for now since they are
+  // discarded by convert_dict, i.e. 'h->astr' is always <= 1. Therefore, this
+  // struct does not use an array for 'astr'.
+  enum {
+    kMaxWordLen = 128,
+  };
+  struct HashEntryItem {
+    hentry entry;
+    char word[kMaxWordLen];
+    unsigned short astr;
+  };
+
+  HashEntryItem hash_items_[MAX_ROOTS];
+};
+
+ScopedHashEntryFactory::ScopedHashEntryFactory() {
+  memset(&hash_items_[0], 0, sizeof(hash_items_));
+}
+
+ScopedHashEntryFactory::~ScopedHashEntryFactory() {
+}
+
+hentry* ScopedHashEntryFactory::CreateScopedHashEntry(int index,
+                                                      const hentry* source) {
+  if (index >= MAX_ROOTS || source->blen >= kMaxWordLen || source->alen > 1)
+    return NULL;
+
+  // Retrieve a HashEntryItem struct from our spool, initialize it, and
+  // returns the address of its 'hentry' member.
+  size_t source_size = sizeof(hentry) + source->blen + 1;
+  HashEntryItem* hash_item = &hash_items_[index];
+  memcpy(&hash_item->entry, source, source_size);
+  if (source->astr) {
+    hash_item->astr = *source->astr;
+    hash_item->entry.astr = &hash_item->astr;
+  }
+  return &hash_item->entry;
+}
+
+}  // namespace
+#endif
+
 SuggestMgr::SuggestMgr(const char * tryme, int maxn, 
                        AffixMgr * aptr)
 {
@@ -1029,6 +1121,11 @@ int SuggestMgr::ngsuggest(char** wlst, char * w, int ns, HashMgr** pHMgr, int md
 
   struct hentry* hp = NULL;
   int col = -1;
+
+#ifdef HUNSPELL_CHROME_CLIENT
+  ScopedHashEntryFactory hash_entry_factory;
+#endif
+
   phonetable * ph = (pAMgr) ? pAMgr->get_phonetable() : NULL;
   char target[MAXSWUTF8L];
   char candidate[MAXSWUTF8L];
@@ -1066,7 +1163,11 @@ int SuggestMgr::ngsuggest(char** wlst, char * w, int ns, HashMgr** pHMgr, int md
 
     if (sc > scores[lp]) {
       scores[lp] = sc;  
+#ifdef HUNSPELL_CHROME_CLIENT
+      roots[lp] = hash_entry_factory.CreateScopedHashEntry(lp, hp);
+#else
       roots[lp] = hp;
+#endif
       lval = sc;
       for (j=0; j < MAX_ROOTS; j++)
         if (scores[j] < lval) {

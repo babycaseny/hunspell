@@ -7,18 +7,35 @@
 
 #include "hunspell.hxx"
 #include "hunspell.h"
+#ifndef HUNSPELL_CHROME_CLIENT
 #include "config.h"
+#endif
 #include "csutil.hxx"
 
+#ifdef HUNSPELL_CHROME_CLIENT
+Hunspell::Hunspell(const unsigned char* bdict_data, size_t bdict_length)
+#else
 Hunspell::Hunspell(const char * affpath, const char * dpath, const char * key)
+#endif
 {
     encoding = NULL;
     csconv = NULL;
     utf8 = 0;
     complexprefixes = 0;
+#ifndef HUNSPELL_CHROME_CLIENT
     affixpath = mystrdup(affpath);
+#endif
     maxdic = 0;
 
+#ifdef HUNSPELL_CHROME_CLIENT
+    bdict_reader = new hunspell::BDictReader;
+    bdict_reader->Init(bdict_data, bdict_length);
+
+    pHMgr[0] = new HashMgr(bdict_reader);
+    if (pHMgr[0]) maxdic = 1;
+
+    pAMgr = new AffixMgr(bdict_reader, pHMgr, &maxdic);
+#else
     /* first set up the hash manager */
     pHMgr[0] = new HashMgr(dpath, affpath, key);
     if (pHMgr[0]) maxdic = 1;
@@ -26,6 +43,7 @@ Hunspell::Hunspell(const char * affpath, const char * dpath, const char * key)
     /* next set up the affix manager */
     /* it needs access to the hash manager lookup methods */
     pAMgr = new AffixMgr(affpath, pHMgr, &maxdic, key);
+#endif
 
     /* get the preferred try string and the dictionary */
     /* encoding from the Affix Manager for that dictionary */
@@ -56,10 +74,17 @@ Hunspell::~Hunspell()
     csconv= NULL;
     if (encoding) free(encoding);
     encoding = NULL;
+
+#ifdef HUNSPELL_CHROME_CLIENT
+    if (bdict_reader) delete bdict_reader;
+    bdict_reader = NULL;
+#else
     if (affixpath) free(affixpath);
     affixpath = NULL;
+#endif
 }
 
+#ifndef HUNSPELL_CHROME_CLIENT
 // load extra dictionaries
 int Hunspell::add_dic(const char * dpath, const char * key) {
     if (maxdic == MAXDIC || !affixpath) return 1;
@@ -67,6 +92,7 @@ int Hunspell::add_dic(const char * dpath, const char * key) {
     if (pHMgr[maxdic]) maxdic++; else return 1;
     return 0;
 }
+#endif
 
 // make a copy of src at destination while removing all leading
 // blanks and removing any trailing periods after recording
@@ -319,6 +345,9 @@ int Hunspell::insert_sug(char ***slst, char * word, int ns) {
 
 int Hunspell::spell(const char * word, int * info, char ** root)
 {
+#ifdef HUNSPELL_CHROME_CLIENT
+  if (pHMgr) pHMgr[0]->EmptyHentryCache();
+#endif
   struct hentry * rv=NULL;
   // need larger vector. For example, Turkish capital letter I converted a
   // 2-byte UTF-8 character (dotless i) by mkallsmall.
@@ -567,6 +596,13 @@ struct hentry * Hunspell::checkword(const char * w, int * info, char ** root)
      word = w2;
   } else word = w;
 
+#ifdef HUNSPELL_CHROME_CLIENT
+  // We need to check if the word length is valid to make coverity (Event
+  // fixed_size_dest: Possible overrun of N byte fixed size buffer) happy.
+  if ((utf8 && strlen(word) >= MAXWORDUTF8LEN) || (!utf8 && strlen(word) >= MAXWORDLEN))
+    return NULL;
+#endif
+
   // word reversing wrapper for complex prefixes
   if (complexprefixes) {
     if (word != w2) {
@@ -657,6 +693,9 @@ struct hentry * Hunspell::checkword(const char * w, int * info, char ** root)
 
 int Hunspell::suggest(char*** slst, const char * word)
 {
+#ifdef HUNSPELL_CHROME_CLIENT
+  if (pHMgr) pHMgr[0]->EmptyHentryCache();
+#endif
   int onlycmpdsug = 0;
   char cw[MAXWORDUTF8LEN];
   char wspace[MAXWORDUTF8LEN];
@@ -1874,13 +1913,21 @@ char * Hunspell::morph_with_correction(const char * word)
 
 Hunhandle *Hunspell_create(const char * affpath, const char * dpath)
 {
+#ifdef HUNSPELL_CHROME_CLIENT
+        return NULL;
+#else
         return (Hunhandle*)(new Hunspell(affpath, dpath));
+#endif
 }
 
 Hunhandle *Hunspell_create_key(const char * affpath, const char * dpath,
     const char * key)
 {
+#ifdef HUNSPELL_CHROME_CLIENT
+        return NULL;
+#else
         return (Hunhandle*)(new Hunspell(affpath, dpath, key));
+#endif
 }
 
 void Hunspell_destroy(Hunhandle *pHunspell)

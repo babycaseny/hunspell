@@ -14,8 +14,14 @@
 
 #include "csutil.hxx"
 
+#ifdef HUNSPELL_CHROME_CLIENT
+AffixMgr::AffixMgr(hunspell::BDictReader* reader, HashMgr** ptr, int * md)
+{
+  bdict_reader = reader;
+#else
 AffixMgr::AffixMgr(const char * affpath, HashMgr** ptr, int * md, const char * key) 
 {
+#endif
   // register hash manager and load affix data from aff file
   pHMgr = ptr[0];
   alldic = ptr;
@@ -99,9 +105,17 @@ AffixMgr::AffixMgr(const char * affpath, HashMgr** ptr, int * md, const char * k
      sFlag[i] = NULL;
   }
 
+#ifdef HUNSPELL_CHROME_CLIENT
+  // Define dummy parameters for parse_file() to avoid changing the parameters
+  // of parse_file(). This may make it easier to merge the changes of the
+  // original hunspell.
+  const char* affpath = NULL;
+  const char* key = NULL;
+#else
   for (int j=0; j < CONTSIZE; j++) {
     contclasses[j] = 0;
   }
+#endif
 
   if (parse_file(affpath, key)) {
      HUNSPELL_WARNING(stderr, "Failure loading aff file %s\n",affpath);
@@ -252,6 +266,43 @@ int  AffixMgr::parse_file(const char * affpath, const char * key)
   char * line; // io buffers
   char ft;     // affix type
   
+#ifdef HUNSPELL_CHROME_CLIENT
+  // open the affix file
+  // We're always UTF-8
+  utf8 = 1;
+
+  // A BDICT file stores PFX and SFX lines in a special section and it provides
+  // a special line iterator for reading PFX and SFX lines.
+  // We create a FileMgr object from this iterator and parse PFX and SFX lines
+  // before parsing other lines.
+  hunspell::LineIterator affix_iterator = bdict_reader->GetAffixLineIterator();
+  FileMgr* iterator = new FileMgr(&affix_iterator);
+  if (!iterator) {
+    HUNSPELL_WARNING(stderr,
+        "error: could not create a FileMgr from an affix line iterator.\n");
+    return 1;
+  }
+
+  while (line = iterator->getline()) {
+    ft = ' ';
+    if (strncmp(line,"PFX",3) == 0) ft = complexprefixes ? 'S' : 'P';
+    if (strncmp(line,"SFX",3) == 0) ft = complexprefixes ? 'P' : 'S';
+    if (ft != ' ')
+      parse_affix(line, ft, iterator, NULL);
+  }
+  delete iterator;
+
+  // Create a FileMgr object for reading lines except PFX and SFX lines.
+  // We don't need to change the loop below since our FileMgr emulates the
+  // original one.
+  hunspell::LineIterator other_iterator = bdict_reader->GetOtherLineIterator();
+  FileMgr * afflst = new FileMgr(&other_iterator);
+  if (!afflst) {
+    HUNSPELL_WARNING(stderr,
+        "error: could not create a FileMgr from an other line iterator.\n");
+    return 1;
+  }
+#else
   // checking flag duplication
   char dupflags[CONTSIZE];
   char dupflags_ini = 1;
@@ -265,6 +316,7 @@ int  AffixMgr::parse_file(const char * affpath, const char * key)
     HUNSPELL_WARNING(stderr, "error: could not open affix description file %s\n",affpath);
     return 1;
   }
+#endif
 
   // step one is to parse the affix file building up the internal
   // affix data structures
@@ -274,6 +326,7 @@ int  AffixMgr::parse_file(const char * affpath, const char * key)
     while ((line = afflst->getline())) {
        mychomp(line);
 
+#ifndef HUNSPELL_CHROME_CLIENT
        /* remove byte order mark */
        if (firstline) {
          firstline = 0;
@@ -282,6 +335,7 @@ int  AffixMgr::parse_file(const char * affpath, const char * key)
             memmove(line, line+3, strlen(line+3)+1);
          }
        }
+#endif
 
        /* parse in the keyboard string */
        if (strncmp(line,"KEY",3) == 0) {
@@ -517,6 +571,7 @@ int  AffixMgr::parse_file(const char * affpath, const char * key)
           }
        }
 
+#ifndef HUNSPELL_CHROME_CLIENT
        /* parse in the typical fault correcting table */
        if (strncmp(line,"REP",3) == 0) {
           if (parse_reptable(line, afflst)) {
@@ -524,6 +579,7 @@ int  AffixMgr::parse_file(const char * affpath, const char * key)
              return 1;
           }
        }
+#endif
 
        /* parse in the input conversion table */
        if (strncmp(line,"ICONV",5) == 0) {
@@ -634,6 +690,7 @@ int  AffixMgr::parse_file(const char * affpath, const char * key)
                    checksharps=1;
        }
 
+#ifndef HUNSPELL_CHROME_CLIENT  // Chrome handled affixes above.
        /* parse this affix: P - prefix, S - suffix */
        ft = ' ';
        if (strncmp(line,"PFX",3) == 0) ft = complexprefixes ? 'S' : 'P';
@@ -650,6 +707,7 @@ int  AffixMgr::parse_file(const char * affpath, const char * key)
              return 1;
           }
        }
+#endif
 
     }
     delete afflst;
@@ -1247,6 +1305,26 @@ int AffixMgr::cpdrep_check(const char * word, int wl)
   const char * r;
   int lenr, lenp;
 
+#ifdef HUNSPELL_CHROME_CLIENT
+  const char *pattern, *pattern2;
+  hunspell::ReplacementIterator iterator = bdict_reader->GetReplacementIterator();
+  while (iterator.GetNext(&pattern, &pattern2)) {
+    r = word;
+    lenr = strlen(pattern2);
+    lenp = strlen(pattern);
+
+    // search every occurence of the pattern in the word
+    while ((r=strstr(r, pattern)) != NULL) {
+      strcpy(candidate, word);
+      if (r-word + lenr + strlen(r+lenp) >= MAXLNLEN) break;
+      strcpy(candidate+(r-word), pattern2);
+      strcpy(candidate+(r-word)+lenr, r+lenp);
+      if (candidate_check(candidate,strlen(candidate))) return 1;
+      r++; // search for the next letter
+    }
+  }
+
+#else
   if ((wl < 2) || !numrep) return 0;
 
   for (int i=0; i < numrep; i++ ) {
@@ -1263,6 +1341,7 @@ int AffixMgr::cpdrep_check(const char * word, int wl)
           r++; // search for the next letter
       }
    }
+#endif
    return 0;
 }
 
@@ -3332,6 +3411,7 @@ int  AffixMgr::parse_cpdsyllable(char * line, FileMgr * af)
    return 0;
 }
 
+#ifndef HUNSPELL_CHROME_CLIENT
 /* parse in the typical fault correcting table */
 int  AffixMgr::parse_reptable(char * line, FileMgr * af)
 {
@@ -3407,6 +3487,7 @@ int  AffixMgr::parse_reptable(char * line, FileMgr * af)
    }
    return 0;
 }
+#endif
 
 /* parse in the typical fault correcting table */
 int  AffixMgr::parse_convtable(char * line, FileMgr * af, RepList ** rl, const char * keyword)
@@ -4010,6 +4091,7 @@ int  AffixMgr::parse_affix(char * line, const char at, FileMgr * af, char * dupf
              case 1: { 
                     np++;
                     aflag = pHMgr->decode_flag(piece);
+#ifndef HUNSPELL_CHROME_CLIENT // We don't check for duplicates.
                     if (((at == 'S') && (dupflags[aflag] & dupSFX)) ||
                         ((at == 'P') && (dupflags[aflag] & dupPFX))) {
                         HUNSPELL_WARNING(stderr, "error: line %d: multiple definitions of an affix flag\n",
@@ -4017,6 +4099,7 @@ int  AffixMgr::parse_affix(char * line, const char at, FileMgr * af, char * dupf
                         // return 1; XXX permissive mode for bad dictionaries
                     }
                     dupflags[aflag] += (char) ((at == 'S') ? dupSFX : dupPFX);
+#endif
                     break; 
                     }
              // piece 3 - is cross product indicator 
