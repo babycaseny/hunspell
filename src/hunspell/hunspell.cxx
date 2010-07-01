@@ -8,7 +8,9 @@
 #include "hunspell.hxx"
 #include "hunspell.h"
 #ifndef HUNSPELL_CHROME_CLIENT
-#include "config.h"
+#ifndef MOZILLA_CLIENT
+#    include "config.h"
+#endif
 #endif
 #include "csutil.hxx"
 
