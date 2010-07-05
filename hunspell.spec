@@ -38,6 +38,7 @@ Includes and definitions for developing with hunspell
 make %{?_smp_mflags}
 
 %check
+chmod u+x tests/korean.test
 %ifarch %{ix86} x86_64
 VALGRIND=memcheck make check
 %else
