@@ -1,7 +1,7 @@
 Name:      hunspell
 Summary:   A spell checker and morphological analyzer library
 Version:   1.2.11
-Release:   2%{?dist}
+Release:   3%{?dist}
 Source:    http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Group:     System Environment/Libraries
 URL:       http://hunspell.sourceforge.net/
@@ -12,6 +12,7 @@ BuildRequires: ncurses-devel
 BuildRequires: valgrind
 %endif
 Patch0: hunspell-1.2.11-valgrind.patch
+Patch1: hunspell-1.2.11-koreansupport.patch
 
 %description
 Hunspell is a spell checker and morphological analyzer library and program 
@@ -30,6 +31,7 @@ Includes and definitions for developing with hunspell
 %prep
 %setup -q
 %patch0 -p1 -b .valgrind
+%patch1 -p0 -b .koreansupport
 
 %build
 %configure --disable-rpath --disable-static  --with-ui --with-readline
@@ -89,6 +91,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/hunspell.3.gz
 
 %changelog
+* Mon Jul 05 2010 Caolán McNamara <caolanm@redhat.com> - 1.2.11-3
+- add korean Hangul syllable support
+
 * Tue Jun 22 2010 Caolán McNamara <caolanm@redhat.com> - 1.2.11-2
 - use valgrind in make check
 
