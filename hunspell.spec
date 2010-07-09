@@ -1,7 +1,9 @@
+%define double_profiling_build 1
+
 Name:      hunspell
 Summary:   A spell checker and morphological analyzer library
 Version:   1.2.11
-Release:   3%{?dist}
+Release:   4%{?dist}
 Source:    http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Group:     System Environment/Libraries
 URL:       http://hunspell.sourceforge.net/
@@ -10,6 +12,9 @@ License:   LGPLv2+ or GPLv2+ or MPLv1.1
 BuildRequires: ncurses-devel
 %ifarch %{ix86} x86_64
 BuildRequires: valgrind
+%endif
+%if %{double_profiling_build}
+BuildRequires: words
 %endif
 Patch0: hunspell-1.2.11-valgrind.patch
 Patch1: hunspell-1.2.11-koreansupport.patch
@@ -32,13 +37,42 @@ Includes and definitions for developing with hunspell
 %setup -q
 %patch0 -p1 -b .valgrind
 %patch1 -p0 -b .koreansupport
+chmod u+x tests/korean.test
 
 %build
-%configure --disable-rpath --disable-static  --with-ui --with-readline
+configureflags="--disable-rpath --disable-static --with-ui --with-readline"
+
+%define profilegenerate \
+    CFLAGS="${RPM_OPT_FLAGS} -fprofile-generate"\
+    CXXFLAGS="${RPM_OPT_FLAGS} -fprofile-generate"
+%define profileuse \
+    CFLAGS="${RPM_OPT_FLAGS} -fprofile-use"\
+    CXXFLAGS="${RPM_OPT_FLAGS} -fprofile-use"
+
+%if !%{double_profiling_build}
+%configure $configureflags
 make %{?_smp_mflags}
+%else
+#Generate a word list to use for profiling, take half of it to ensure
+#that the original word list is then considered to contain correctly
+#and incorrectly spelled words
+head -n $((`cat /usr/share/dict/words | wc -l`/2)) /usr/share/dict/words |\
+    sed '/\//d'> words
+
+#generate profiling
+%{profilegenerate} %configure $configureflags
+make %{?_smp_mflags}
+./src/tools/affixcompress words > /dev/null 2>&1
+./src/tools/hunspell -d words -l /usr/share/dict/words > /dev/null
+make check
+make distclean
+
+#use profiling
+%{profileuse} %configure $configureflags
+make %{?_smp_mflags}
+%endif
 
 %check
-chmod u+x tests/korean.test
 %ifarch %{ix86} x86_64
 VALGRIND=memcheck make check
 %else
@@ -92,6 +126,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/hunspell.3.gz
 
 %changelog
+* Fri Jul 09 2010 Caolán McNamara <caolanm@redhat.com> - 1.2.11-4
+- use -fprofile-generate and -fprofile-use
+
 * Mon Jul 05 2010 Caolán McNamara <caolanm@redhat.com> - 1.2.11-3
 - add korean Hangul syllable support
 
