@@ -63,7 +63,7 @@
         ],
       },
       'conditions': [
-        ['OS=="linux"', {
+        ['OS=="linux" or OS=="freebsd"', {
           'cflags': [
             '-Wno-unused-value',
             '-Wno-unused-variable',
