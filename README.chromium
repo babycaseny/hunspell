@@ -1,3 +1,6 @@
+Name: hunspell
+URL: http://hunspell.sourceforge.net/
+
 This is a partial copy of Hunspell 1.2.12 with the following changes:
 * Remove '#include "config.h"' from src/hunspell/hunspell.hxx
 * Remove '#include "config.h"' from src/hunspell/license.hunspell
