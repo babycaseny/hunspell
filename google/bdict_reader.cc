@@ -210,6 +210,10 @@ NodeReader::NodeReader(const unsigned char* bdict_data, size_t bdict_length,
 
 int NodeReader::FindWord(const unsigned char* word,
                          int affix_indices[BDict::MAX_AFFIXES_PER_WORD]) const {
+  // Return 0 if the dictionary is corrupt as BDictReader::FindWord() does.
+  if (!bdict_data_ || node_offset_ > bdict_length_)
+    return 0;
+
   if (is_leaf())
     return CompareLeafNode(word, affix_indices);
 
