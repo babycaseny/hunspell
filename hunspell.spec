@@ -3,7 +3,7 @@
 Name:      hunspell
 Summary:   A spell checker and morphological analyzer library
 Version:   1.2.12
-Release:   1%{?dist}
+Release:   2%{?dist}
 Source:    http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Group:     System Environment/Libraries
 URL:       http://hunspell.sourceforge.net/
@@ -16,6 +16,7 @@ BuildRequires: valgrind
 %if %{double_profiling_build}
 BuildRequires: words
 %endif
+Patch1: backport.warnings.patch
 
 %description
 Hunspell is a spell checker and morphological analyzer library and program 
@@ -33,6 +34,7 @@ Includes and definitions for developing with hunspell
 
 %prep
 %setup -q
+%patch1 -p0 -b .backport.warnings
 
 %build
 configureflags="--disable-rpath --disable-static --with-ui --with-readline"
@@ -121,6 +123,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/hunspell.3.gz
 
 %changelog
+* Fri Nov 05 2010 Caolán McNamara <caolanm@redhat.com> - 1.2.12-2
+- Resolves: rhbz#648740 thousands of trailing empty rules spew
+
 * Thu Jul 15 2010 Caolán McNamara <caolanm@redhat.com> - 1.2.12-1
 - latest version
 - drop integrated hunspell-1.2.11-valgrind.patch
