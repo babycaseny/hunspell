@@ -649,8 +649,7 @@ bool BDictReader::Init(const unsigned char* bdict_data, size_t bdict_length) {
   // Check header.
   header_ = reinterpret_cast<const BDict::Header*>(bdict_data);
   if (header_->signature != BDict::SIGNATURE ||
-      header_->major_version != 1 ||
-      header_->aff_offset > bdict_length ||
+      header_->major_version > BDict::MAJOR_VERSION ||
       header_->dic_offset > bdict_length)
     return false;
 
@@ -663,6 +662,11 @@ bool BDictReader::Init(const unsigned char* bdict_data, size_t bdict_length) {
   // Make sure there is enough room for the affix group count dword.
   if (aff_header_->affix_group_offset + sizeof(uint32) > bdict_length)
     return false;
+
+  // This function is called from SpellCheck::SpellCheckWord(), which blocks
+  // WebKit. To avoid blocking WebKit for a long time, we do not check the MD5
+  // digest here. Instead we check the MD5 digest when Chrome finishes
+  // downloading a dictionary.
 
   // Don't set these until the end. This way, NULL bdict_data_ will indicate
   // failure.

@@ -18,6 +18,7 @@
         'OPENOFFICEORG',
       ],
       'sources': [
+        'google/bdict.cc',
         'google/bdict.h',
         'google/bdict_reader.cc',
         'google/bdict_reader.h',

@@ -4,14 +4,16 @@
 #define CHROME_THIRD_PARTY_HUNSPELL_GOOGLE_BDICT_H__
 
 #include "base/basictypes.h"
+#include "base/md5.h"
 
 // BDict (binary dictionary) format. All offsets are little endian.
 //
-// Header (12 bytes).
+// Header (28 bytes).
 //   "BDic" Signature (4 bytes)
 //   Version (little endian 4 bytes)
 //   Absolute offset in file of the aff info. (4 bytes)
 //   Absolute offset in file of the dic table. (4 bytes)
+//   (Added by v2.0) MD5 checksum of the aff info and the dic table. (16 bytes)
 //
 // Aff information:
 //   Absolute offset in file of the affix group table (4 bytes)
@@ -21,10 +23,10 @@
 //
 //   The data between the aff header and the affix rules table is the comment
 //   from the beginning of the .aff file which often contains copyrights, etc.
-// 
+//
 //   Affix group table:
 //     Array of NULL terminated strings. It will end in a double-NULL.
-//   
+//
 //   Affix rules table:
 //     List of LF termianted lines. NULL terminated.
 //
@@ -37,7 +39,7 @@
 //
 //   Other rules table:
 //     List of LF termianted lines. NULL terminated.
-//     
+//
 //
 // Dic table. This stores the .dic file which contains the words in the
 // dictionary, and indices for each one that indicate a set of suffixes or
@@ -99,8 +101,8 @@ class BDict {
   // File header.
   enum { SIGNATURE = 0x63694442 };
   enum {
-    MAJOR_VERSION = 1,
-    MINOR_VERSION = 1
+    MAJOR_VERSION = 2,
+    MINOR_VERSION = 0
   };
   struct Header {
     uint32 signature;
@@ -112,6 +114,9 @@ class BDict {
 
     uint32 aff_offset;  // Offset of the aff data.
     uint32 dic_offset;  // Offset of the dic data.
+
+    // Added by version 2.0.
+    MD5Digest digest;  // MD5 digest of the aff data and the dic data.
   };
 
   // AFF section ===============================================================
@@ -191,6 +196,10 @@ class BDict {
 
   // The low 4 bits of the list ID byte are the count.
   enum { LIST_NODE_COUNT_MASK = 0xF };  // 00001111
+
+  // Verifies the specified BDICT is sane. This function checks the BDICT header
+  // and compares the MD5 digest of the data with the one in the header.
+  static bool Verify(const char* bdict_data, size_t bdict_length);
 };
 
 #pragma pack(pop)
