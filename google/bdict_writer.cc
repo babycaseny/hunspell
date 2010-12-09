@@ -484,7 +484,7 @@ void BDictWriter::SerializeAff(std::string* output) const {
 
   // We need a magic first AF line that lists the number of following ones.
   size_t affix_group_offset = output->size();
-  output->append(StringPrintf("AF %d", affix_groups_.size()));
+  output->append(StringPrintf("AF %d", static_cast<int>(affix_groups_.size())));
   output->push_back(0);
   SerializeStringListNullTerm(affix_groups_, output);
 
