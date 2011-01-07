@@ -2,7 +2,7 @@
 
 Name:      hunspell
 Summary:   A spell checker and morphological analyzer library
-Version:   1.2.13
+Version:   1.2.14
 Release:   1%{?dist}
 Source:    http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Group:     System Environment/Libraries
@@ -121,6 +121,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/hunspell.3.gz
 
 %changelog
+* Fri Jan 07 2011 Caolán McNamara <caolanm@redhat.com> - 1.2.14-1
+- latest version
+
 * Wed Jan 05 2011 Caolán McNamara <caolanm@redhat.com> - 1.2.13-1
 - latest version
 - drop integrated backport.warnings.patch
