@@ -68,7 +68,11 @@ make %{?_smp_mflags}
 %endif
 
 %check
+%ifarch %{ix86} x86_64
+VALGRIND=memcheck make check
+%else
 make check
+%endif
 
 %install
 rm -rf $RPM_BUILD_ROOT
