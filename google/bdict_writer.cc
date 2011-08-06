@@ -467,7 +467,7 @@ std::string BDictWriter::GetBDict() const {
   // Write the MD5 digest of the affix information and the dictionary words at
   // the end of the BDic header.
   if (header->major_version >= 2)
-    MD5Sum(&ret[aff_offset], ret.size() - aff_offset, &header->digest);
+    base::MD5Sum(&ret[aff_offset], ret.size() - aff_offset, &header->digest);
 
   return ret;
 }

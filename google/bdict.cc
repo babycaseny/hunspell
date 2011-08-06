@@ -1,4 +1,4 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright (c) 2011 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,8 +30,8 @@ bool hunspell::BDict::Verify(const char* bdict_data, size_t bdict_length) {
   // The new BDICT header has a MD5 digest of the dictionary data. Compare the
   // MD5 digest of the data with the one in the BDICT header.
   if (header->major_version >= 2) {
-    MD5Digest digest;
-    MD5Sum(aff_header, bdict_length - header->aff_offset, &digest);
+    base::MD5Digest digest;
+    base::MD5Sum(aff_header, bdict_length - header->aff_offset, &digest);
     if (memcmp(&digest, &header->digest, sizeof(digest)))
       return false;
   }
