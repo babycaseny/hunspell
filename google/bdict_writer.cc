@@ -3,7 +3,7 @@
 #include "third_party/hunspell/google/bdict_writer.h"
 
 #include "base/logging.h"
-#include "base/string_util.h"
+#include "base/stringprintf.h"
 #include "third_party/hunspell/google/bdict.h"
 
 namespace hunspell {
@@ -484,7 +484,8 @@ void BDictWriter::SerializeAff(std::string* output) const {
 
   // We need a magic first AF line that lists the number of following ones.
   size_t affix_group_offset = output->size();
-  output->append(StringPrintf("AF %d", static_cast<int>(affix_groups_.size())));
+  output->append(base::StringPrintf("AF %d",
+                                    static_cast<int>(affix_groups_.size())));
   output->push_back(0);
   SerializeStringListNullTerm(affix_groups_, output);
 
