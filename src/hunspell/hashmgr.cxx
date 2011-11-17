@@ -416,8 +416,9 @@ struct hentry * HashMgr::walk_hashtable(int &col, struct hentry * hp) const
   // This function is only ever called by one place and not nested. We can
   // therefore keep static state between calls and use |col| as a "reset" flag
   // to avoid changing the API. It is set to -1 for the first call.
-  static hunspell::WordIterator word_iterator =
-      bdict_reader->GetAllWordIterator();
+  // Allocate the iterator on the heap to prevent an exit time destructor.
+  static hunspell::WordIterator& word_iterator =
+      *new hunspell::WordIterator(bdict_reader->GetAllWordIterator());
   if (col < 0) {
     col = 1;
     word_iterator = bdict_reader->GetAllWordIterator();
