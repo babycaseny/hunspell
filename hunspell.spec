@@ -3,7 +3,7 @@
 Name:      hunspell
 Summary:   A spell checker and morphological analyzer library
 Version:   1.3.2
-Release:   1%{?dist}
+Release:   2%{?dist}
 Source:    http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Group:     System Environment/Libraries
 URL:       http://hunspell.sourceforge.net/
@@ -16,6 +16,7 @@ BuildRequires: valgrind
 %if %{double_profiling_build}
 BuildRequires: words
 %endif
+Patch0: hunspell.rhbz759647.patch
 
 %description
 Hunspell is a spell checker and morphological analyzer library and program 
@@ -33,6 +34,7 @@ Includes and definitions for developing with hunspell
 
 %prep
 %setup -q
+%patch0 -p0 -b .rhbz759647
 
 %build
 configureflags="--disable-rpath --disable-static --with-ui --with-readline"
@@ -121,6 +123,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/hunspell.3.gz
 
 %changelog
+* Tue Dec 06 2011 Caolán McNamara <caolanm@redhat.com> - 1.3.2-2
+- Resolves: rhbz#759647 temp file name collision
+
 * Tue May 24 2011 Caolán McNamara <caolanm@redhat.com> - 1.3.2-1
 - Resolves: rhbz#706686 latest version
 
