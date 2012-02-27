@@ -283,7 +283,7 @@ int  AffixMgr::parse_file(const char * affpath, const char * key)
     return 1;
   }
 
-  while (line = iterator->getline()) {
+  while ((line = iterator->getline())) {
     ft = ' ';
     if (strncmp(line,"PFX",3) == 0) ft = complexprefixes ? 'S' : 'P';
     if (strncmp(line,"SFX",3) == 0) ft = complexprefixes ? 'P' : 'S';
