@@ -12,6 +12,7 @@ This is a partial copy of Hunspell 1.2.12 with the following changes:
   src/hunspell/suggestmgr.cxx
 * Change the input params of the constructors to receive a BDICTReader instead
   of a file path.
+* Merge http://hunspell.cvs.sourceforge.net/viewvc/hunspell/hunspell/src/hunspell/affixmgr.cxx?r1=1.40&r2=1.41
 The patch is in google.patch.
 
 All dictionaries used by Chromium has been checked in to the
