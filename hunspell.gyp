@@ -71,6 +71,17 @@
             '-Wno-write-strings',
           ],
         }],
+        ['clang == 1', {
+          'xcode_settings': {
+            'WARNING_CFLAGS': [
+              # affentry.cxx has one `while ((p = nextchar(p)));` parsing loop.
+              '-Wno-empty-body',
+            ],
+          },
+          'cflags': [
+            '-Wno-empty-body',
+          ],
+        }],
       ],
     },
   ],
