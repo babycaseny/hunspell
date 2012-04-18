@@ -1,9 +1,11 @@
 Name: hunspell
 URL: http://hunspell.sourceforge.net/
-Version: 1.2.12
+Version: 1.3.2
+License File: COPYING
+Security Critical: yes
 
 Description:
-This is a partial copy of Hunspell 1.2.12 with the following changes:
+This is a partial copy of Hunspell 1.3.2 with the following changes:
 * Remove '#include "config.h"' from src/hunspell/hunspell.hxx
 * Remove '#include "config.h"' from src/hunspell/license.hunspell
 * Change src/hunspell/filemgr.hxx and src/hunspell/filemgr.cxx to use
