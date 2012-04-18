@@ -3,7 +3,7 @@
 Name:      hunspell
 Summary:   A spell checker and morphological analyzer library
 Version:   1.3.2
-Release:   3%{?dist}
+Release:   4%{?dist}
 Source:    http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Group:     System Environment/Libraries
 URL:       http://hunspell.sourceforge.net/
@@ -70,7 +70,8 @@ make %{?_smp_mflags}
 %endif
 
 %check
-%ifarch %{ix86} x86_64
+#%ifarch %{ix86} x86_64, see rhbz#813780
+%ifarch %{ix86}
 VALGRIND=memcheck make check
 %else
 make check
@@ -123,6 +124,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/hunspell.3.gz
 
 %changelog
+* Wed Apr 18 2012 Caolán McNamara <caolanm@redhat.com> - 1.3.2-4
+- Resolves: rhbz#813478 x86_64 valgrind spews, see rhbz#813780
+
 * Fri Jan 13 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.3.2-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
 
