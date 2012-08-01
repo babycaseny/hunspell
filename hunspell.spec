@@ -3,7 +3,7 @@
 Name:      hunspell
 Summary:   A spell checker and morphological analyzer library
 Version:   1.3.2
-Release:   5%{?dist}
+Release:   6%{?dist}
 Source:    http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Group:     System Environment/Libraries
 URL:       http://hunspell.sourceforge.net/
@@ -16,6 +16,7 @@ BuildRequires: valgrind
 %if %{double_profiling_build}
 BuildRequires: words
 %endif
+Requires:  hunspell-en
 Patch0: hunspell.rhbz759647.patch
 
 %description
@@ -124,6 +125,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/hunspell.3.gz
 
 %changelog
+* Wed Aug 01 2012 Caolán McNamara <caolanm@redhat.com> - 1.3.2-6
+- Resolves: rhbz#573516 have hunspell require hunspell-en to ensure
+  at least one dictionary exists
+
 * Thu Jul 19 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.3.2-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
 
