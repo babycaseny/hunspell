@@ -3,7 +3,7 @@
 Name:      hunspell
 Summary:   A spell checker and morphological analyzer library
 Version:   1.3.2
-Release:   6%{?dist}
+Release:   8%{?dist}
 Source:    http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Group:     System Environment/Libraries
 URL:       http://hunspell.sourceforge.net/
@@ -16,7 +16,7 @@ BuildRequires: valgrind
 %if %{double_profiling_build}
 BuildRequires: words
 %endif
-Requires:  hunspell-en
+Requires:  hunspell-en-US
 Patch0: hunspell.rhbz759647.patch
 
 %description
@@ -125,6 +125,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/hunspell.3.gz
 
 %changelog
+* Tue Aug 28 2012 Caolán McNamara <caolanm@redhat.com> - 1.3.2-8
+- Related: rhbz#850709 en-US available standalone
+
 * Wed Aug 01 2012 Caolán McNamara <caolanm@redhat.com> - 1.3.2-6
 - Resolves: rhbz#573516 have hunspell require hunspell-en to ensure
   at least one dictionary exists
