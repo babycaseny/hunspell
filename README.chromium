@@ -23,6 +23,8 @@ This is a partial copy of Hunspell 1.3.2 with the following changes:
 The patch is in google.patch.
 * Add a pointer to the bdict_reader into the "SuggestMgr" so that it can use the
   replacement table from the bdict file for the secondary suggestion mechanism.
+* Reduce maximum word length to spellcheck from 99 to 98 characters to avoid
+  a crash in SuggestMgr::forgotchar_utf() in Windows.
 
 All dictionaries used by Chromium has been checked in to the
 'third_party/hunspell_dictionaries' directory. They have several additions over
