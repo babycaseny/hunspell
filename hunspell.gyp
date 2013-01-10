@@ -63,6 +63,8 @@
           'USE_HUNSPELL',
         ],
       },
+      # TODO(jschuh): http://crbug.com/167187 size_t -> int
+      'msvs_disabled_warnings': [ 4267 ],
       'conditions': [
         ['os_posix == 1 and OS != "mac"', {
           'cflags': [
