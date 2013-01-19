@@ -6,7 +6,7 @@
   'targets': [
     {
       'target_name': 'hunspell',
-      'type': '<(library)',
+      'type': 'static_library',
       'msvs_guid': 'D5E8DCB2-9C61-446F-8BEE-B18CA0E0936E',
       'dependencies': [
         '../../base/base.gyp:base',
