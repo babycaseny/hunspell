@@ -3,7 +3,7 @@
 Name:      hunspell
 Summary:   A spell checker and morphological analyzer library
 Version:   1.3.2
-Release:   8%{?dist}
+Release:   9%{?dist}
 Source:    http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Group:     System Environment/Libraries
 URL:       http://hunspell.sourceforge.net/
@@ -125,6 +125,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/hunspell.3.gz
 
 %changelog
+* Thu Feb 14 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.3.2-9
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
+
 * Tue Aug 28 2012 Caolán McNamara <caolanm@redhat.com> - 1.3.2-8
 - Related: rhbz#850709 en-US available standalone
 
