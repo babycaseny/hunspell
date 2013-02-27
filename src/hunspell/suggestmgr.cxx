@@ -54,24 +54,25 @@ class ScopedHashEntryFactory {
   // it can store affix flags into 'h->astr[0]',...,'h->astr[alen-1]'. To handle
   // this new hentry struct, we define a struct which combines three values: an
   // hentry struct 'hentry'; a char array 'word[kMaxWordLen]', and; an unsigned
-  // short value 'astr' so a hentry struct 'h' returned from
+  // short array 'astr' so a hentry struct 'h' returned from
   // CreateScopedHashEntry() satisfies the following equations:
   //   hentry* h = factory.CreateScopedHashEntry(0, source);
   //   h->word[0] == ((HashEntryItem*)h)->entry.word[0].
   //   h->word[1] == ((HashEntryItem*)h)->word[0].
   //   ...
   //   h->word[h->blen] == ((HashEntryItem*)h)->word[h->blen-1].
-  //   h->astr[0] == ((HashEntryItem*)h)->astr.
-  // Our BDICT does not use affix flags longer than one for now since they are
-  // discarded by convert_dict, i.e. 'h->astr' is always <= 1. Therefore, this
-  // struct does not use an array for 'astr'.
+  //   h->astr[0] == ((HashEntryItem*)h)->astr[0].
+  //   h->astr[1] == ((HashEntryItem*)h)->astr[1].
+  //   ...
+  //   h->astr[h->alen-1] == ((HashEntryItem*)h)->astr[h->alen-1].
   enum {
     kMaxWordLen = 128,
+    kMaxAffixLen = 8,
   };
   struct HashEntryItem {
     hentry entry;
     char word[kMaxWordLen];
-    unsigned short astr;
+    unsigned short astr[kMaxAffixLen];
   };
 
   HashEntryItem hash_items_[MAX_ROOTS];
@@ -86,7 +87,7 @@ ScopedHashEntryFactory::~ScopedHashEntryFactory() {
 
 hentry* ScopedHashEntryFactory::CreateScopedHashEntry(int index,
                                                       const hentry* source) {
-  if (index >= MAX_ROOTS || source->blen >= kMaxWordLen || source->alen > 1)
+  if (index >= MAX_ROOTS || source->blen >= kMaxWordLen)
     return NULL;
 
   // Retrieve a HashEntryItem struct from our spool, initialize it, and
@@ -95,8 +96,11 @@ hentry* ScopedHashEntryFactory::CreateScopedHashEntry(int index,
   HashEntryItem* hash_item = &hash_items_[index];
   memcpy(&hash_item->entry, source, source_size);
   if (source->astr) {
-    hash_item->astr = *source->astr;
-    hash_item->entry.astr = &hash_item->astr;
+    hash_item->entry.alen = source->alen;
+    if (hash_item->entry.alen > kMaxAffixLen)
+      hash_item->entry.alen = kMaxAffixLen;
+    memcpy(hash_item->astr, source->astr, hash_item->entry.alen * sizeof(hash_item->astr[0]));
+    hash_item->entry.astr = &hash_item->astr[0];
   }
   return &hash_item->entry;
 }
