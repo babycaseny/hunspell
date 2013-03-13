@@ -37,7 +37,7 @@ Includes and definitions for developing with hunspell
 %prep
 %setup -q
 %patch0 -p0 -b .rhbz759647
-%patch2 -p0 -b .rhbz918938
+%patch1 -p0 -b .rhbz918938
 
 %build
 configureflags="--disable-rpath --disable-static --with-ui --with-readline"
