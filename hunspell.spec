@@ -3,7 +3,7 @@
 Name:      hunspell
 Summary:   A spell checker and morphological analyzer library
 Version:   1.3.2
-Release:   9%{?dist}
+Release:   10%{?dist}
 Source:    http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Group:     System Environment/Libraries
 URL:       http://hunspell.sourceforge.net/
@@ -18,6 +18,7 @@ BuildRequires: words
 %endif
 Requires:  hunspell-en-US
 Patch0: hunspell.rhbz759647.patch
+Patch1: hunspell.rhbz918938.patch
 
 %description
 Hunspell is a spell checker and morphological analyzer library and program 
@@ -36,6 +37,7 @@ Includes and definitions for developing with hunspell
 %prep
 %setup -q
 %patch0 -p0 -b .rhbz759647
+%patch2 -p0 -b .rhbz918938
 
 %build
 configureflags="--disable-rpath --disable-static --with-ui --with-readline"
@@ -125,6 +127,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/hunspell.3.gz
 
 %changelog
+* Wed Mar 13 2013 Caolán McNamara <caolanm@redhat.com> - 1.3.2-10
+- Resolves: rhbz#918938 crash in danish thesaurus/spell interaction
+
 * Thu Feb 14 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.3.2-9
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
 
