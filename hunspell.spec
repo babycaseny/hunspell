@@ -3,7 +3,7 @@
 Name:      hunspell
 Summary:   A spell checker and morphological analyzer library
 Version:   1.3.2
-Release:   10%{?dist}
+Release:   11%{?dist}
 Source:    http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Group:     System Environment/Libraries
 URL:       http://hunspell.sourceforge.net/
@@ -19,6 +19,7 @@ BuildRequires: words
 Requires:  hunspell-en-US
 Patch0: hunspell.rhbz759647.patch
 Patch1: hunspell.rhbz918938.patch
+Patch2: hunspell-aarch64.patch
 
 %description
 Hunspell is a spell checker and morphological analyzer library and program 
@@ -38,6 +39,7 @@ Includes and definitions for developing with hunspell
 %setup -q
 %patch0 -p0 -b .rhbz759647
 %patch1 -p0 -b .rhbz918938
+%patch2 -p1 -b .aarch64
 
 %build
 configureflags="--disable-rpath --disable-static --with-ui --with-readline"
@@ -127,6 +129,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/hunspell.3.gz
 
 %changelog
+* Thu Apr 04 2013 Caolán McNamara <caolanm@redhat.com> - 1.3.2-11
+- Resolves: rhbz#925562 support aarch64
+
 * Wed Mar 13 2013 Caolán McNamara <caolanm@redhat.com> - 1.3.2-10
 - Resolves: rhbz#918938 crash in danish thesaurus/spell interaction
 
