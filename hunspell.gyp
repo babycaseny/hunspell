@@ -73,11 +73,11 @@
             '-Wno-write-strings',
           ],
         }],
-        ['gcc_version >= 48', {
+        ['os_posix==1 and OS!="mac" and OS!="ios" and gcc_version >= 48', {
           'cflags': [
-              # affentry.hxx has NULL as default parameter for a FLAG in two
-              # places.
-              '-Wno-conversion-null',
+            # affentry.hxx has NULL as default parameter for a FLAG in two
+            # places.
+            '-Wno-conversion-null',
           ],
         }],
         ['clang == 1', {
