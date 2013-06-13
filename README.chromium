@@ -11,7 +11,7 @@ This is a partial copy of Hunspell 1.3.2 with the following changes:
 * Remove '#include "config.h"' from src/hunspell/license.hunspell
 * Change src/hunspell/filemgr.hxx and src/hunspell/filemgr.cxx to use
   LineIterator.
-* Add ScropedHashEntry, which creates temporary hentry objects, to
+* Add ScopedHashEntry, which creates temporary hentry objects, to
   src/hunspell/suggestmgr.cxx
 * Change the input params of the constructors to receive a BDICTReader instead
   of a file path.
