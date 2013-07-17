@@ -3,7 +3,7 @@
 Name:      hunspell
 Summary:   A spell checker and morphological analyzer library
 Version:   1.3.2
-Release:   11%{?dist}
+Release:   12%{?dist}
 Source:    http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Group:     System Environment/Libraries
 URL:       http://hunspell.sourceforge.net/
@@ -129,6 +129,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/hunspell.3.gz
 
 %changelog
+* Wed Jul 17 2013 Petr Pisar <ppisar@redhat.com> - 1.3.2-12
+- Perl 5.18 rebuild
+
 * Thu Apr 04 2013 Caolán McNamara <caolanm@redhat.com> - 1.3.2-11
 - Resolves: rhbz#925562 support aarch64
 
