@@ -3,7 +3,7 @@
 Name:      hunspell
 Summary:   A spell checker and morphological analyzer library
 Version:   1.3.2
-Release:   12%{?dist}
+Release:   13%{?dist}
 Source:    http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Group:     System Environment/Libraries
 URL:       http://hunspell.sourceforge.net/
@@ -20,6 +20,7 @@ Requires:  hunspell-en-US
 Patch0: hunspell.rhbz759647.patch
 Patch1: hunspell.rhbz918938.patch
 Patch2: hunspell-aarch64.patch
+Patch3: hunspell.rhbz985052.patch
 
 %description
 Hunspell is a spell checker and morphological analyzer library and program 
@@ -40,6 +41,7 @@ Includes and definitions for developing with hunspell
 %patch0 -p0 -b .rhbz759647
 %patch1 -p0 -b .rhbz918938
 %patch2 -p1 -b .aarch64
+%patch3 -p0 -b .rhbz985052
 
 %build
 configureflags="--disable-rpath --disable-static --with-ui --with-readline"
@@ -129,6 +131,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/hunspell.3.gz
 
 %changelog
+* Thu Jul 25 2013 Caolán McNamara <caolanm@redhat.com> - 1.3.2-13
+- Resolves: rhbz#985052 layout problems with very long lines
+
 * Wed Jul 17 2013 Petr Pisar <ppisar@redhat.com> - 1.3.2-12
 - Perl 5.18 rebuild
 
@@ -288,10 +293,10 @@ rm -rf $RPM_BUILD_ROOT
 - Drop ABI breaking hunspell-1.2.2-xulrunner.pita.patch and fix the
   hunspell include in xulrunner.
 
-* Fri Jun 18 2008 Caolán McNamara <caolanm@redhat.com> - 1.2.4.2-1
+* Wed Jun 18 2008 Caolán McNamara <caolanm@redhat.com> - 1.2.4.2-1
 - latest version
 
-* Thu Jun 17 2008 Caolán McNamara <caolanm@redhat.com> - 1.2.4-1
+* Tue Jun 17 2008 Caolán McNamara <caolanm@redhat.com> - 1.2.4-1
 - latest version
 
 * Fri May 16 2008 Caolán McNamara <caolanm@redhat.com> - 1.2.2-3
