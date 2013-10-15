@@ -3,7 +3,7 @@
 Name:      hunspell
 Summary:   A spell checker and morphological analyzer library
 Version:   1.3.2
-Release:   14%{?dist}
+Release:   15%{?dist}
 Source:    http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Group:     System Environment/Libraries
 URL:       http://hunspell.sourceforge.net/
@@ -21,6 +21,7 @@ Patch0: hunspell.rhbz759647.patch
 Patch1: hunspell.rhbz918938.patch
 Patch2: hunspell-aarch64.patch
 Patch3: hunspell.rhbz985052.patch
+Patch4: manpage.esc.space.patch
 
 %description
 Hunspell is a spell checker and morphological analyzer library and program 
@@ -42,6 +43,7 @@ Includes and definitions for developing with hunspell
 %patch1 -p0 -b .rhbz918938
 %patch2 -p1 -b .aarch64
 %patch3 -p0 -b .rhbz985052
+%patch4 -p0 -b .manpage.esc.space
 
 %build
 configureflags="--disable-rpath --disable-static --with-ui --with-readline"
@@ -131,6 +133,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/hunspell.3.gz
 
 %changelog
+* Tue Oct 15 2013 Caolán McNamara <caolanm@redhat.com> - 1.3.2-15
+- Resolves: rhbz#1019158 esc space in man page
+
 * Sat Aug 03 2013 Petr Pisar <ppisar@redhat.com> - 1.3.2-14
 - Perl 5.18 rebuild
 
