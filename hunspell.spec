@@ -43,7 +43,7 @@ Includes and definitions for developing with hunspell
 %patch1 -p0 -b .rhbz918938
 %patch2 -p1 -b .aarch64
 %patch3 -p0 -b .rhbz985052
-%patch4 -p0 -b .manpage.esc.space
+%patch4 -p1 -b .manpage.esc.space
 
 %build
 configureflags="--disable-rpath --disable-static --with-ui --with-readline"
