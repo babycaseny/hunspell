@@ -4,7 +4,7 @@ RCS file: /cvsroot/hunspell/hunspell/src/hunspell/affixmgr.cxx,v
 retrieving revision 1.41
 diff -u -r1.41 affixmgr.cxx
 --- src/hunspell/affixmgr.cxx	16 Dec 2011 09:15:34 -0000	1.41
-+++ src/hunspell/affixmgr.cxx	27 Feb 2013 01:10:35 -0000
++++ src/hunspell/affixmgr.cxx	11 Mar 2014 17:47:58 -0000
 @@ -14,8 +14,14 @@
  
  #include "csutil.hxx"
@@ -195,7 +195,7 @@ RCS file: /cvsroot/hunspell/hunspell/src/hunspell/affixmgr.hxx,v
 retrieving revision 1.15
 diff -u -r1.15 affixmgr.hxx
 --- src/hunspell/affixmgr.hxx	13 Oct 2011 13:41:54 -0000	1.15
-+++ src/hunspell/affixmgr.hxx	27 Feb 2013 01:10:35 -0000
++++ src/hunspell/affixmgr.hxx	11 Mar 2014 17:47:58 -0000
 @@ -18,6 +18,40 @@
  class PfxEntry;
  class SfxEntry;
@@ -280,7 +280,7 @@ RCS file: /cvsroot/hunspell/hunspell/src/hunspell/filemgr.cxx,v
 retrieving revision 1.5
 diff -u -r1.5 filemgr.cxx
 --- src/hunspell/filemgr.cxx	23 Jun 2011 09:21:50 -0000	1.5
-+++ src/hunspell/filemgr.cxx	27 Feb 2013 01:10:35 -0000
++++ src/hunspell/filemgr.cxx	11 Mar 2014 17:47:58 -0000
 @@ -7,6 +7,32 @@
  
  #include "filemgr.hxx"
@@ -325,7 +325,7 @@ RCS file: /cvsroot/hunspell/hunspell/src/hunspell/filemgr.hxx,v
 retrieving revision 1.3
 diff -u -r1.3 filemgr.hxx
 --- src/hunspell/filemgr.hxx	15 Apr 2010 11:22:08 -0000	1.3
-+++ src/hunspell/filemgr.hxx	27 Feb 2013 01:10:35 -0000
++++ src/hunspell/filemgr.hxx	11 Mar 2014 17:47:58 -0000
 @@ -7,6 +7,30 @@
  #include "hunzip.hxx"
  #include <stdio.h>
@@ -368,7 +368,7 @@ RCS file: /cvsroot/hunspell/hunspell/src/hunspell/hashmgr.cxx,v
 retrieving revision 1.12
 diff -u -r1.12 hashmgr.cxx
 --- src/hunspell/hashmgr.cxx	23 Jun 2011 09:21:50 -0000	1.12
-+++ src/hunspell/hashmgr.cxx	27 Feb 2013 01:10:35 -0000
++++ src/hunspell/hashmgr.cxx	11 Mar 2014 17:47:58 -0000
 @@ -12,8 +12,14 @@
  
  // build a hash table from a munched word list
@@ -738,7 +738,7 @@ RCS file: /cvsroot/hunspell/hunspell/src/hunspell/hashmgr.hxx,v
 retrieving revision 1.3
 diff -u -r1.3 hashmgr.hxx
 --- src/hunspell/hashmgr.hxx	15 Apr 2010 11:22:08 -0000	1.3
-+++ src/hunspell/hashmgr.hxx	27 Feb 2013 01:10:35 -0000
++++ src/hunspell/hashmgr.hxx	11 Mar 2014 17:47:58 -0000
 @@ -8,10 +8,25 @@
  #include "htypes.hxx"
  #include "filemgr.hxx"
@@ -836,7 +836,7 @@ RCS file: /cvsroot/hunspell/hunspell/src/hunspell/htypes.hxx,v
 retrieving revision 1.3
 diff -u -r1.3 htypes.hxx
 --- src/hunspell/htypes.hxx	6 Sep 2010 07:58:53 -0000	1.3
-+++ src/hunspell/htypes.hxx	27 Feb 2013 01:10:35 -0000
++++ src/hunspell/htypes.hxx	11 Mar 2014 17:47:58 -0000
 @@ -1,6 +1,16 @@
  #ifndef _HTYPES_HXX_
  #define _HTYPES_HXX_
@@ -860,7 +860,7 @@ RCS file: /cvsroot/hunspell/hunspell/src/hunspell/hunspell.cxx,v
 retrieving revision 1.29
 diff -u -r1.29 hunspell.cxx
 --- src/hunspell/hunspell.cxx	23 Jun 2011 09:21:50 -0000	1.29
-+++ src/hunspell/hunspell.cxx	27 Feb 2013 01:10:35 -0000
++++ src/hunspell/hunspell.cxx	11 Mar 2014 17:47:58 -0000
 @@ -7,20 +7,37 @@
  
  #include "hunspell.hxx"
@@ -949,7 +949,7 @@ diff -u -r1.29 hunspell.cxx
  int Hunspell::spell(const char * word, int * info, char ** root)
  {
 +#ifdef HUNSPELL_CHROME_CLIENT
-+  if (pHMgr) pHMgr[0]->EmptyHentryCache();
++  if (pHMgr[0]) pHMgr[0]->EmptyHentryCache();
 +#endif
    struct hentry * rv=NULL;
    // need larger vector. For example, Turkish capital letter I converted a
@@ -973,7 +973,7 @@ diff -u -r1.29 hunspell.cxx
  int Hunspell::suggest(char*** slst, const char * word)
  {
 +#ifdef HUNSPELL_CHROME_CLIENT
-+  if (pHMgr) pHMgr[0]->EmptyHentryCache();
++  if (pHMgr[0]) pHMgr[0]->EmptyHentryCache();
 +#endif
    int onlycmpdsug = 0;
    char cw[MAXWORDUTF8LEN];
@@ -1006,7 +1006,7 @@ RCS file: /cvsroot/hunspell/hunspell/src/hunspell/hunspell.hxx,v
 retrieving revision 1.6
 diff -u -r1.6 hunspell.hxx
 --- src/hunspell/hunspell.hxx	21 Jan 2011 17:30:41 -0000	1.6
-+++ src/hunspell/hunspell.hxx	27 Feb 2013 01:10:35 -0000
++++ src/hunspell/hunspell.hxx	11 Mar 2014 17:47:58 -0000
 @@ -5,6 +5,10 @@
  #include "suggestmgr.hxx"
  #include "langnum.hxx"
@@ -1063,7 +1063,7 @@ RCS file: /cvsroot/hunspell/hunspell/src/hunspell/replist.hxx,v
 retrieving revision 1.2
 diff -u -r1.2 replist.hxx
 --- src/hunspell/replist.hxx	15 Apr 2010 11:22:09 -0000	1.2
-+++ src/hunspell/replist.hxx	27 Feb 2013 01:10:35 -0000
++++ src/hunspell/replist.hxx	11 Mar 2014 17:47:58 -0000
 @@ -2,6 +2,12 @@
  #ifndef _REPLIST_HXX_
  #define _REPLIST_HXX_
@@ -1083,7 +1083,7 @@ RCS file: /cvsroot/hunspell/hunspell/src/hunspell/suggestmgr.cxx,v
 retrieving revision 1.24
 diff -u -r1.24 suggestmgr.cxx
 --- src/hunspell/suggestmgr.cxx	14 Feb 2011 21:47:24 -0000	1.24
-+++ src/hunspell/suggestmgr.cxx	27 Feb 2013 01:10:36 -0000
++++ src/hunspell/suggestmgr.cxx	11 Mar 2014 17:47:58 -0000
 @@ -12,9 +12,114 @@
  
  const w_char W_VLINE = { '\0', '|' };
@@ -1309,7 +1309,7 @@ RCS file: /cvsroot/hunspell/hunspell/src/hunspell/suggestmgr.hxx,v
 retrieving revision 1.5
 diff -u -r1.5 suggestmgr.hxx
 --- src/hunspell/suggestmgr.hxx	21 Jan 2011 22:10:24 -0000	1.5
-+++ src/hunspell/suggestmgr.hxx	27 Feb 2013 01:10:36 -0000
++++ src/hunspell/suggestmgr.hxx	11 Mar 2014 17:47:58 -0000
 @@ -52,7 +52,11 @@
  
  
