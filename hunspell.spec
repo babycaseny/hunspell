@@ -2,8 +2,8 @@
 
 Name:      hunspell
 Summary:   A spell checker and morphological analyzer library
-Version:   1.3.2
-Release:   15%{?dist}
+Version:   1.3.3
+Release:   1%{?dist}
 Source:    http://downloads.sourceforge.net/%{name}/hunspell-%{version}.tar.gz
 Group:     System Environment/Libraries
 URL:       http://hunspell.sourceforge.net/
@@ -17,11 +17,6 @@ BuildRequires: valgrind
 BuildRequires: words
 %endif
 Requires:  hunspell-en-US
-Patch0: hunspell.rhbz759647.patch
-Patch1: hunspell.rhbz918938.patch
-Patch2: hunspell-aarch64.patch
-Patch3: hunspell.rhbz985052.patch
-Patch4: manpage.esc.space.patch
 
 %description
 Hunspell is a spell checker and morphological analyzer library and program 
@@ -39,11 +34,6 @@ Includes and definitions for developing with hunspell
 
 %prep
 %setup -q
-%patch0 -p0 -b .rhbz759647
-%patch1 -p0 -b .rhbz918938
-%patch2 -p1 -b .aarch64
-%patch3 -p0 -b .rhbz985052
-%patch4 -p1 -b .manpage.esc.space
 
 %build
 configureflags="--disable-rpath --disable-static --with-ui --with-readline"
@@ -108,9 +98,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/myspell
 %{_bindir}/hunspell
 %{_mandir}/man1/hunspell.1.gz
-%{_mandir}/man4/hunspell.4.gz
 %lang(hu) %{_mandir}/hu/man1/hunspell.1.gz
-%lang(hu) %{_mandir}/hu/man4/hunspell.4.gz
 
 %files devel
 %defattr(-,root,root,-)
@@ -131,8 +119,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/hunzip.1.gz
 %{_mandir}/man1/hzip.1.gz
 %{_mandir}/man3/hunspell.3.gz
+%{_mandir}/man5/hunspell.5.gz
 
 %changelog
+* Wed Jun 04 2014 Caolán McNamara <caolanm@redhat.com> - 1.3.3-1
+- Resolves: rhbz#1104042 update to latest version
+
 * Tue Oct 15 2013 Caolán McNamara <caolanm@redhat.com> - 1.3.2-15
 - Resolves: rhbz#1019158 esc space in man page
 
