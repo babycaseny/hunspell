@@ -81,7 +81,7 @@ source_set("hunspell") {
     ]
   }
 
-  if (is_linux) {
+  if (is_posix && !is_mac && !is_ios) {
     cflags += [
       # affentry.hxx has NULL as default parameter for a FLAG in two
       # places.
