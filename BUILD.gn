@@ -51,6 +51,8 @@ source_set("hunspell") {
     "src/parsers/textparser.hxx",
   ]
 
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
   direct_dependent_configs = [
     ":hunspell_config",
   ]
