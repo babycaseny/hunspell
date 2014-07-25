@@ -24,7 +24,7 @@ The patch is in google.patch.
 * calloc buffers in SuggestMgr::lcs to avoid reads from uninintialized buffers.
 
 Chromium-specific changes are in google.patch. To update the patch, follow these
-steps:
+steps, or simply run update_google_patch.sh from the commandline.
 1) Checkout hunspell:
    $ cvs -z3 \
          -d:pserver:anonymous@hunspell.cvs.sourceforge.net:/cvsroot/hunspell \
