@@ -127,7 +127,7 @@ case "$os" in
 	# from the environment variables.
 	echo "C ASCII"
 	echo "POSIX ASCII"
-	for l in af af_ZA bb bb_BK ca ca_ES da da_DK de de_AT de_BE de_CH de_DE de_LU \
+	for l in af af_ZA ca ca_ES da da_DK de de_AT de_BE de_CH de_DE de_LU \
 	         en en_AU en_BW en_CA en_DK en_GB en_IE en_NZ en_US en_ZA \
 	         en_ZW es es_AR es_BO es_CL es_CO es_DO es_EC es_ES es_GT \
 	         es_HN es_MX es_PA es_PE es_PY es_SV es_US es_UY es_VE et \
