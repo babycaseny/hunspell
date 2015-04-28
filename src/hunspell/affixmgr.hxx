@@ -279,6 +279,7 @@ private:
 
   void reverse_condition(char *);
   void debugflag(char * result, unsigned short flag);
+  std::string& debugflag(std::string& result, unsigned short flag);
   int condlen(char *);
   int encodeit(affentry &entry, char * cs);
   int build_pfxtree(PfxEntry* pfxptr);

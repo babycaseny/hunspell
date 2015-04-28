@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 #include "filemgr.hxx"
+<<<<<<< HEAD
 
 #ifdef HUNSPELL_CHROME_CLIENT
 #include "third_party/hunspell/google/bdict_reader.h"
@@ -33,15 +34,29 @@ int FileMgr::getlinenum() {
   return 0;
 }
 #else
+=======
+#include "csutil.hxx"
+
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 int FileMgr::fail(const char * err, const char * par) {
     fprintf(stderr, err, par);
     return -1;
 }
 
+<<<<<<< HEAD
 FileMgr::FileMgr(const char * file, const char * key) {
     linenum = 0;
     hin = NULL;
     fin = fopen(file, "r");
+=======
+FileMgr::FileMgr(const char * file, const char * key)
+    : hin(NULL)
+    , linenum(0)
+{
+    in[0] = '\0';
+
+    fin = myfopen(file, "r");
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
     if (!fin) {
         // check hzipped file
         char * st = (char *) malloc(strlen(file) + strlen(HZIP_EXTENSION) + 1);
@@ -73,4 +88,7 @@ char * FileMgr::getline() {
 int FileMgr::getlinenum() {
     return linenum;
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c

@@ -1,6 +1,7 @@
 #ifndef _HTYPES_HXX_
 #define _HTYPES_HXX_
 
+<<<<<<< HEAD
 #ifdef HUNSPELL_CHROME_CLIENT
 // This is a workaround for preventing errors in parsing Turkish BDICs, which
 // contain very long AF lines (~ 12,000 chars).
@@ -11,6 +12,8 @@
 #define MAXDELEN    8192
 #endif  // HUNSPELL_CHROME_CLIENT
 
+=======
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 #define ROTATE_LEN   5
 
 #define ROTATE(v,q) \

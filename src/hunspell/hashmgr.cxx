@@ -5,6 +5,10 @@
 #include <string.h>
 #include <stdio.h> 
 #include <ctype.h>
+<<<<<<< HEAD
+=======
+#include <limits>
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 
 #include "hashmgr.hxx"
 #include "csutil.hxx"
@@ -12,6 +16,7 @@
 
 // build a hash table from a munched word list
 
+<<<<<<< HEAD
 #ifdef HUNSPELL_CHROME_CLIENT
 HashMgr::HashMgr(hunspell::BDictReader* reader)
 {
@@ -25,6 +30,21 @@ HashMgr::HashMgr(const char * tpath, const char * apath, const char * key)
   flag_mode = FLAG_CHAR;
   complexprefixes = 0;
   utf8 = 0;
+=======
+HashMgr::HashMgr(const char * tpath, const char * apath, const char * key)
+  : tablesize(0)
+  , tableptr(NULL)
+  , flag_mode(FLAG_CHAR)
+  , complexprefixes(0)
+  , utf8(0)
+  , forbiddenword(FORBIDDENWORD) // forbidden word signing flag
+  , numaliasf(0)
+  , aliasf(NULL)
+  , aliasflen(0)
+  , numaliasm(0)
+  , aliasm(NULL)
+{
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
   langnum = 0;
   lang = NULL;
   enc = NULL;
@@ -32,6 +52,7 @@ HashMgr::HashMgr(const char * tpath, const char * apath, const char * key)
   ignorechars = NULL;
   ignorechars_utf16 = NULL;
   ignorechars_utf16_len = 0;
+<<<<<<< HEAD
   numaliasf = 0;
   aliasf = NULL;
   numaliasm = 0;
@@ -45,6 +66,10 @@ HashMgr::HashMgr(const char * tpath, const char * apath, const char * key)
   load_config(apath, key);
   int ec = load_tables(tpath, key);
 #endif
+=======
+  load_config(apath, key);
+  int ec = load_tables(tpath, key);
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
   if (ec) {
     /* error condition - what should we do here */
     HUNSPELL_WARNING(stderr, "Hash Manager Error : %d\n",ec);
@@ -103,6 +128,7 @@ HashMgr::~HashMgr()
   if (ignorechars) free(ignorechars);
   if (ignorechars_utf16) free(ignorechars_utf16);
 
+<<<<<<< HEAD
 #ifdef HUNSPELL_CHROME_CLIENT
   EmptyHentryCache();
   for (std::vector<std::string*>::iterator it = pointer_to_strings_.begin();
@@ -110,11 +136,14 @@ HashMgr::~HashMgr()
     delete *it;
   }
 #endif
+=======
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 #ifdef MOZILLA_CLIENT
     delete [] csconv;
 #endif
 }
 
+<<<<<<< HEAD
 #ifdef HUNSPELL_CHROME_CLIENT
 void HashMgr::EmptyHentryCache() {
   // We need to delete each cache entry, and each additional one in the linked
@@ -132,10 +161,13 @@ void HashMgr::EmptyHentryCache() {
 }
 #endif
 
+=======
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 // lookup a root word in the hashtable
 
 struct hentry * HashMgr::lookup(const char *word) const
 {
+<<<<<<< HEAD
 #ifdef HUNSPELL_CHROME_CLIENT
   int affix_ids[hunspell::BDict::MAX_AFFIXES_PER_WORD];
   int affix_count = bdict_reader->FindWord(word, affix_ids);
@@ -155,6 +187,8 @@ struct hentry * HashMgr::lookup(const char *word) const
 
   return AffixIDsToHentry(word_buf, affix_ids, affix_count);
 #else
+=======
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
     struct hentry * dp;
     if (tableptr) {
        dp = tableptr[hash(word)];
@@ -164,16 +198,24 @@ struct hentry * HashMgr::lookup(const char *word) const
        }
     }
     return NULL;
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 }
 
 // add a word to the hash table (private)
 int HashMgr::add_word(const char * word, int wbl, int wcl, unsigned short * aff,
     int al, const char * desc, bool onlyupcase)
 {
+<<<<<<< HEAD
 #ifndef HUNSPELL_CHROME_CLIENT
     bool upcasehomonym = false;
     int descl = desc ? (aliasm ? sizeof(short) : strlen(desc) + 1) : 0;
+=======
+    bool upcasehomonym = false;
+    int descl = desc ? (aliasm ? sizeof(char *) : strlen(desc) + 1) : 0;
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
     // variable-length hash record with word and optional fields
     struct hentry* hp = 
 	(struct hentry *) malloc (sizeof(struct hentry) + wbl + descl);
@@ -263,6 +305,7 @@ int HashMgr::add_word(const char * word, int wbl, int wcl, unsigned short * aff,
     	    if (hp->astr) free(hp->astr);
     	    free(hp);
        }
+<<<<<<< HEAD
 #else
     std::map<base::StringPiece, int>::iterator iter =
         custom_word_to_affix_id_map_.find(word);
@@ -274,22 +317,41 @@ int HashMgr::add_word(const char * word, int wbl, int wcl, unsigned short * aff,
       return 1;
     }
 #endif
+=======
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
     return 0;
 }     
 
 int HashMgr::add_hidden_capitalized_word(char * word, int wbl, int wcl,
+<<<<<<< HEAD
     unsigned short * flags, int al, char * dp, int captype)
 {
+=======
+    unsigned short * flags, int flagslen, char * dp, int captype)
+{
+    if (flags == NULL)
+        flagslen = 0;
+
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
     // add inner capitalized forms to handle the following allcap forms:
     // Mixed caps: OpenOffice.org -> OPENOFFICE.ORG
     // Allcaps with suffixes: CIA's -> CIA'S    
     if (((captype == HUHCAP) || (captype == HUHINITCAP) ||
+<<<<<<< HEAD
       ((captype == ALLCAP) && (flags != NULL))) &&
       !((flags != NULL) && TESTAFF(flags, forbiddenword, al))) {
           unsigned short * flags2 = (unsigned short *) malloc (sizeof(unsigned short) * (al+1));
 	  if (!flags2) return 1;
           if (al) memcpy(flags2, flags, al * sizeof(unsigned short));
           flags2[al] = ONLYUPCASEFLAG;
+=======
+      ((captype == ALLCAP) && (flagslen != 0))) &&
+      !((flagslen != 0) && TESTAFF(flags, forbiddenword, flagslen))) {
+          unsigned short * flags2 = (unsigned short *) malloc (sizeof(unsigned short) * (flagslen+1));
+	  if (!flags2) return 1;
+          if (flagslen) memcpy(flags2, flags, flagslen * sizeof(unsigned short));
+          flags2[flagslen] = ONLYUPCASEFLAG;
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
           if (utf8) {
               char st[BUFSIZE];
               w_char w[BUFSIZE];
@@ -297,11 +359,19 @@ int HashMgr::add_hidden_capitalized_word(char * word, int wbl, int wcl,
               mkallsmall_utf(w, wlen, langnum);
               mkallcap_utf(w, 1, langnum);
               u16_u8(st, BUFSIZE, w, wlen);
+<<<<<<< HEAD
               return add_word(st,wbl,wcl,flags2,al+1,dp, true);
            } else {
                mkallsmall(word, csconv);
                mkinitcap(word, csconv);
                return add_word(word,wbl,wcl,flags2,al+1,dp, true);
+=======
+              return add_word(st,wbl,wcl,flags2,flagslen+1,dp, true);
+           } else {
+               mkallsmall(word, csconv);
+               mkinitcap(word, csconv);
+               return add_word(word,wbl,wcl,flags2,flagslen+1,dp, true);
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
            }
     }
     return 0;
@@ -324,17 +394,24 @@ int HashMgr::get_clen_and_captype(const char * word, int wbl, int * captype) {
 // remove word (personal dictionary function for standalone applications)
 int HashMgr::remove(const char * word)
 {
+<<<<<<< HEAD
 #ifdef HUNSPELL_CHROME_CLIENT
     std::map<base::StringPiece, int>::iterator iter =
         custom_word_to_affix_id_map_.find(word);
     if (iter != custom_word_to_affix_id_map_.end())
         custom_word_to_affix_id_map_.erase(iter);
 #else
+=======
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
     struct hentry * dp = lookup(word);
     while (dp) {
         if (dp->alen == 0 || !TESTAFF(dp->astr, forbiddenword, dp->alen)) {
             unsigned short * flags =
+<<<<<<< HEAD
                 (unsigned short *) malloc(sizeof(short) * (dp->alen + 1));
+=======
+                (unsigned short *) malloc(sizeof(unsigned short) * (dp->alen + 1));
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
             if (!flags) return 1;
             for (int i = 0; i < dp->alen; i++) flags[i] = dp->astr[i];
             flags[dp->alen] = forbiddenword;
@@ -344,7 +421,10 @@ int HashMgr::remove(const char * word)
         }
         dp = dp->next_homonym;
     }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
     return 0;
 }
 
@@ -357,7 +437,11 @@ int HashMgr::remove_forbidden_flag(const char * word) {
             if (dp->alen == 1) dp->alen = 0; // XXX forbidden words of personal dic.
             else {
                 unsigned short * flags2 =
+<<<<<<< HEAD
                     (unsigned short *) malloc(sizeof(short) * (dp->alen - 1));
+=======
+                    (unsigned short *) malloc(sizeof(unsigned short) * (dp->alen - 1));
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
                 if (!flags2) return 1;
                 int i, j = 0;
                 for (i = 0; i < dp->alen; i++) {
@@ -399,9 +483,15 @@ int HashMgr::add_with_affix(const char * word, const char * example)
 	if (aliasf) {
 	    add_word(word, wbl, wcl, dp->astr, dp->alen, NULL, false);	
 	} else {
+<<<<<<< HEAD
     	    unsigned short * flags = (unsigned short *) malloc (dp->alen * sizeof(short));
 	    if (flags) {
 		memcpy((void *) flags, (void *) dp->astr, dp->alen * sizeof(short));
+=======
+    	    unsigned short * flags = (unsigned short *) malloc (dp->alen * sizeof(unsigned short));
+	    if (flags) {
+		memcpy((void *) flags, (void *) dp->astr, dp->alen * sizeof(unsigned short));
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 		add_word(word, wbl, wcl, flags, dp->alen, NULL, false);
 	    } else return 1;
 	}
@@ -414,6 +504,7 @@ int HashMgr::add_with_affix(const char * word, const char * example)
 // initialize: col=-1; hp = NULL; hp = walk_hashtable(&col, hp);
 struct hentry * HashMgr::walk_hashtable(int &col, struct hentry * hp) const
 {  
+<<<<<<< HEAD
 #ifdef HUNSPELL_CHROME_CLIENT
   // Return NULL if dictionary is not valid.
   if (!bdict_reader->IsValid())
@@ -452,6 +543,8 @@ struct hentry * HashMgr::walk_hashtable(int &col, struct hentry * hp) const
   return InitHashEntry(&hash_entry.entry, sizeof(hash_entry),
                        &word[0], word_len, affix_ids[0]);
 #else
+=======
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
   if (hp && hp->next != NULL) return hp->next;
   for (col++; col < tablesize; col++) {
     if (tableptr[col]) return tableptr[col];
@@ -459,13 +552,19 @@ struct hentry * HashMgr::walk_hashtable(int &col, struct hentry * hp) const
   // null at end and reset to start
   col = -1;
   return NULL;
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 }
 
 // load a munched word list and build a hash table on the fly
 int HashMgr::load_tables(const char * tpath, const char * key)
 {
+<<<<<<< HEAD
 #ifndef HUNSPELL_CHROME_CLIENT
+=======
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
   int al;
   char * ap;
   char * dp;
@@ -492,21 +591,39 @@ int HashMgr::load_tables(const char * tpath, const char * key)
   }
 
   tablesize = atoi(ts);
+<<<<<<< HEAD
   if (tablesize == 0) {
+=======
+
+  int nExtra = 5 + USERWORD;
+
+  if (tablesize <= 0 || (tablesize >= (std::numeric_limits<int>::max() - 1 - nExtra) / int(sizeof(struct hentry *)))) {
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
     HUNSPELL_WARNING(stderr, "error: line 1: missing or bad word count in the dic file\n");
     delete dict;
     return 4;
   }
+<<<<<<< HEAD
   tablesize = tablesize + 5 + USERWORD;
   if ((tablesize %2) == 0) tablesize++;
 
   // allocate the hash table
   tableptr = (struct hentry **) malloc(tablesize * sizeof(struct hentry *));
+=======
+  tablesize += nExtra;
+  if ((tablesize % 2) == 0) tablesize++;
+
+  // allocate the hash table
+  tableptr = (struct hentry **) calloc(tablesize, sizeof(struct hentry *));
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
   if (! tableptr) {
     delete dict;
     return 3;
   }
+<<<<<<< HEAD
   for (int i=0; i<tablesize; i++) tableptr[i] = NULL;
+=======
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 
   // loop through all words on much list and add to hash
   // table and create word and affix strings
@@ -586,12 +703,16 @@ int HashMgr::load_tables(const char * tpath, const char * key)
   }
 
   delete dict;
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
   return 0;
 }
 
 // the hash function is a simple load and rotate
 // algorithm borrowed
+<<<<<<< HEAD
 
 int HashMgr::hash(const char * word) const
 {
@@ -599,6 +720,11 @@ int HashMgr::hash(const char * word) const
     return 0;
 #else
     long  hv = 0;
+=======
+int HashMgr::hash(const char * word) const
+{
+    unsigned long hv = 0;
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
     for (int i=0; i < 4  &&  *word != 0; i++)
         hv = (hv << 8) | (*word++);
     while (*word != 0) {
@@ -606,7 +732,10 @@ int HashMgr::hash(const char * word) const
       hv ^= (*word++);
     }
     return (unsigned long) hv % tablesize;
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 }
 
 int HashMgr::decode_flags(unsigned short ** result, char * flags, FileMgr * af) {
@@ -620,7 +749,11 @@ int HashMgr::decode_flags(unsigned short ** result, char * flags, FileMgr * af) 
         len = strlen(flags);
         if (len%2 == 1) HUNSPELL_WARNING(stderr, "error: line %d: bad flagvector\n", af->getlinenum());
         len /= 2;
+<<<<<<< HEAD
         *result = (unsigned short *) malloc(len * sizeof(short));
+=======
+        *result = (unsigned short *) malloc(len * sizeof(unsigned short));
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
         if (!*result) return -1;
         for (int i = 0; i < len; i++) {
             (*result)[i] = (((unsigned short) flags[i * 2]) << 8) + (unsigned short) flags[i * 2 + 1]; 
@@ -636,7 +769,11 @@ int HashMgr::decode_flags(unsigned short ** result, char * flags, FileMgr * af) 
         for (p = flags; *p; p++) {
           if (*p == ',') len++;
         }
+<<<<<<< HEAD
         *result = (unsigned short *) malloc(len * sizeof(short));
+=======
+        *result = (unsigned short *) malloc(len * sizeof(unsigned short));
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
         if (!*result) return -1;
         dest = *result;
         for (p = flags; *p; p++) {
@@ -660,7 +797,11 @@ int HashMgr::decode_flags(unsigned short ** result, char * flags, FileMgr * af) 
       case FLAG_UNI: { // UTF-8 characters
         w_char w[BUFSIZE/2];
         len = u8_u16(w, BUFSIZE/2, flags);
+<<<<<<< HEAD
         *result = (unsigned short *) malloc(len * sizeof(short));
+=======
+        *result = (unsigned short *) malloc(len * sizeof(unsigned short));
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
         if (!*result) return -1;
         memcpy(*result, w, len * sizeof(short));
         break;
@@ -668,7 +809,11 @@ int HashMgr::decode_flags(unsigned short ** result, char * flags, FileMgr * af) 
       default: { // Ispell's one-character flags (erfg -> e r f g)
         unsigned short * dest;
         len = strlen(flags);
+<<<<<<< HEAD
         *result = (unsigned short *) malloc(len * sizeof(short));
+=======
+        *result = (unsigned short *) malloc(len * sizeof(unsigned short));
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
         if (!*result) return -1;
         dest = *result;
         for (unsigned char * p = (unsigned char *) flags; *p; p++) {
@@ -727,12 +872,16 @@ int  HashMgr::load_config(const char * affpath, const char * key)
   int firstline = 1;
  
   // open the affix file
+<<<<<<< HEAD
 #ifdef HUNSPELL_CHROME_CLIENT
   hunspell::LineIterator iterator = bdict_reader->GetOtherLineIterator();
   FileMgr * afflst = new FileMgr(&iterator);
 #else
   FileMgr * afflst = new FileMgr(affpath, key);
 #endif
+=======
+  FileMgr * afflst = new FileMgr(affpath, key);
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
   if (!afflst) {
     HUNSPELL_WARNING(stderr, "Error - could not open affix description file %s\n",affpath);
     return 1;
@@ -850,7 +999,11 @@ int  HashMgr::parse_aliasf(char * line, FileMgr * af)
                           return 1;
                        }
                        aliasf = (unsigned short **) malloc(numaliasf * sizeof(unsigned short *));
+<<<<<<< HEAD
                        aliasflen = (unsigned short *) malloc(numaliasf * sizeof(short));
+=======
+                       aliasflen = (unsigned short *) malloc(numaliasf * sizeof(unsigned short));
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
                        if (!aliasf || !aliasflen) {
                           numaliasf = 0;
                           if (aliasf) free(aliasf);
@@ -927,6 +1080,7 @@ int  HashMgr::parse_aliasf(char * line, FileMgr * af)
    return 0;
 }
 
+<<<<<<< HEAD
 #ifdef HUNSPELL_CHROME_CLIENT
 int HashMgr::LoadAFLines()
 {
@@ -1042,6 +1196,8 @@ hentry* HashMgr::GetHentryFromHEntryCache(char* word) {
 }
 #endif
 
+=======
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 int HashMgr::is_aliasf() {
     return (aliasf != NULL);
 }

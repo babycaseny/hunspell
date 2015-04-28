@@ -23,7 +23,13 @@ struct bit {
 
 class LIBHUNSPELL_DLL_EXPORTED Hunzip
 {
+<<<<<<< HEAD
 
+=======
+private:
+    Hunzip(const Hunzip&);
+    Hunzip& operator = (const Hunzip&);
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 protected:
     char * filename;
     FILE * fin;

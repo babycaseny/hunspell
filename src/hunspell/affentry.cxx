@@ -117,6 +117,7 @@ inline int PfxEntry::test_condition(const char * st)
                 if (*st == '\0' && p) return 0; // word <= condition
                 break;
             }
+            /* FALLTHROUGH */
     default: {
                 if (*st == *p) {
                     st++;
@@ -515,6 +516,7 @@ inline int SfxEntry::test_condition(const char * st, const char * beg)
                 }
                 break;
             }
+            /* FALLTHROUGH */
     default: {
                 if (*st == *p) {
                     p = nextchar(p);

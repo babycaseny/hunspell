@@ -7,6 +7,7 @@
 #include "hunzip.hxx"
 #include <stdio.h>
 
+<<<<<<< HEAD
 #ifdef HUNSPELL_CHROME_CLIENT
 namespace hunspell {
 class LineIterator;
@@ -33,6 +34,13 @@ class FileMgr {
 #else
 class LIBHUNSPELL_DLL_EXPORTED FileMgr
 {
+=======
+class LIBHUNSPELL_DLL_EXPORTED FileMgr
+{
+private:
+    FileMgr(const FileMgr&);
+    FileMgr& operator = (const FileMgr&);
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 protected:
     FILE * fin;
     Hunzip * hin;
@@ -47,4 +55,7 @@ public:
     int getlinenum();
 };
 #endif
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c

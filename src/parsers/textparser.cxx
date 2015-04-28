@@ -46,6 +46,10 @@ static const char * LATIN1[] = {
 
 #define LATIN1_LEN (sizeof(LATIN1) / sizeof(char *))
 
+#define ENTITY_APOS "&apos;"
+#define UTF8_APOS "\xe2\x80\x99"
+#define APOSTROPHE "'"
+
 TextParser::TextParser() {
 	init((char *) NULL);
 }
@@ -100,6 +104,8 @@ void TextParser::init(const char * wordchars)
 	state = 0;
         utf8 = 0;
         checkurl = 0;
+        wordchars_utf16 = NULL;
+        wclen = 0;
 	unsigned int j;
 	for (j = 0; j < 256; j++) {
 		wordcharacters[j] = 0;
@@ -177,6 +183,13 @@ char * TextParser::next_token()
 		case 1: // wordchar
 			if ((latin1 = get_latin1(line[actual] + head))) {
 				head += strlen(latin1);
+			} else if ((is_wordchar((char *) APOSTROPHE) || (is_utf8() && is_wordchar((char *) UTF8_APOS))) && line[actual][head] == '\'' &&
+					is_wordchar(line[actual] + head + 1)) {
+				head++;
+			} else if (is_utf8() && is_wordchar((char *) APOSTROPHE) && // add Unicode apostrophe to the WORDCHARS, if needed
+					strncmp(line[actual] + head, UTF8_APOS, strlen(UTF8_APOS)) == 0 &&
+					is_wordchar(line[actual] + head + strlen(UTF8_APOS))) {
+				head += strlen(UTF8_APOS) - 1;
 			} else if (! is_wordchar(line[actual] + head)) {
 				state = 0;
 				char * t = alloc_token(token, &head);
@@ -271,7 +284,8 @@ void TextParser::set_url_checking(int check)
 
 char * TextParser::alloc_token(int token, int * head)
 {
-    if (get_url(token, head)) return NULL;
+    int url_head = *head;
+    if (get_url(token, &url_head)) return NULL;
     char * t = (char *) malloc(*head - token + 1);
     if (t) {
         t[*head - token] = '\0';

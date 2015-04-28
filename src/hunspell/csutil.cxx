@@ -1,6 +1,10 @@
 #include "license.hunspell"
 #include "license.myspell"
 
+<<<<<<< HEAD
+=======
+#include <algorithm>
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 #include <stdlib.h> 
 #include <string.h>
 #include <stdio.h> 
@@ -17,6 +21,14 @@ struct unicode_info {
   unsigned short clower;
 };
 
+<<<<<<< HEAD
+=======
+#ifdef _WIN32
+#include <windows.h>
+#include <wchar.h>
+#endif
+
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 #ifdef OPENOFFICEORG
 #  include <unicode/uchar.h>
 #else
@@ -28,6 +40,7 @@ struct unicode_info {
 
 #ifdef MOZILLA_CLIENT
 #include "nsCOMPtr.h"
+<<<<<<< HEAD
 #include "nsServiceManagerUtils.h"
 #include "nsIUnicodeEncoder.h"
 #include "nsIUnicodeDecoder.h"
@@ -35,6 +48,14 @@ struct unicode_info {
 #include "nsICharsetConverterManager.h"
 
 static NS_DEFINE_CID(kCharsetConverterManagerCID, NS_ICHARSETCONVERTERMANAGER_CID);
+=======
+#include "nsIUnicodeEncoder.h"
+#include "nsIUnicodeDecoder.h"
+#include "nsUnicharUtils.h"
+#include "mozilla/dom/EncodingUtils.h"
+
+using mozilla::dom::EncodingUtils;
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 #endif
 
 struct unicode_info2 {
@@ -46,6 +67,31 @@ struct unicode_info2 {
 static struct unicode_info2 * utf_tbl = NULL;
 static int utf_tbl_count = 0; // utf_tbl can be used by multiple Hunspell instances
 
+<<<<<<< HEAD
+=======
+FILE * myfopen(const char * path, const char * mode) {
+#ifdef _WIN32
+#define WIN32_LONG_PATH_PREFIX "\\\\?\\"
+    if (strncmp(path, WIN32_LONG_PATH_PREFIX, 4) == 0) {
+        int len = MultiByteToWideChar(CP_UTF8, 0, path, -1, NULL, 0);
+        wchar_t *buff = (wchar_t *) malloc(len * sizeof(wchar_t));
+        wchar_t *buff2 = (wchar_t *) malloc(len * sizeof(wchar_t));
+        FILE * f = NULL;
+        if (buff && buff2) {
+            MultiByteToWideChar(CP_UTF8, 0, path, -1, buff, len);
+            if (_wfullpath( buff2, buff, len ) != NULL) {
+                f = _wfopen(buff2, (strcmp(mode, "r") == 0) ? L"r" : L"rb");
+            }
+            free(buff);
+            free(buff2);
+        }
+        return f;
+    }
+#endif
+    return fopen(path, mode);
+}
+
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 /* only UTF-16 (BMP) implementation */
 char * u16_u8(char * dest, int size, const w_char * src, int srclen) {
     signed char * u8 = (signed char *)dest;
@@ -93,6 +139,47 @@ char * u16_u8(char * dest, int size, const w_char * src, int srclen) {
     return dest;
 }
 
+<<<<<<< HEAD
+=======
+std::string& u16_u8(std::string& dest, const std::vector<w_char>& src)
+{
+    dest.clear();
+    std::vector<w_char>::const_iterator u2 = src.begin();
+    std::vector<w_char>::const_iterator u2_max = src.end();
+    while (u2 < u2_max)
+    {
+    	signed char u8;
+        if (u2->h) { // > 0xFF
+            // XXX 4-byte haven't implemented yet.
+            if (u2->h >= 0x08) {   // >= 0x800 (3-byte UTF-8 character)
+                u8 = 0xe0 + (u2->h >> 4);
+                dest.push_back(u8);
+                u8 = 0x80 + ((u2->h & 0xf) << 2) + (u2->l >> 6);
+                dest.push_back(u8);
+                u8 = 0x80 + (u2->l & 0x3f);
+                dest.push_back(u8);
+            } else { // < 0x800 (2-byte UTF-8 character)
+                u8 = 0xc0 + (u2->h << 2) + (u2->l >> 6);
+                dest.push_back(u8);
+                u8 = 0x80 + (u2->l & 0x3f);
+                dest.push_back(u8);
+            }
+        } else { // <= 0xFF
+            if (u2->l & 0x80) { // >0x80 (2-byte UTF-8 character)
+                u8 = 0xc0 + (u2->l >> 6);
+                dest.push_back(u8);
+                u8 = 0x80 + (u2->l & 0x3f);
+                dest.push_back(u8);
+            } else { // < 0x80 (1-byte UTF-8 character)
+                u8 = u2->l;
+                dest.push_back(u8);
+            }
+        }
+        ++u2;
+    }
+    return dest;
+}
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 
 /* only UTF-16 (BMP) implementation */
 int u8_u16(w_char * dest, int size, const char * src) {
@@ -168,6 +255,86 @@ int u8_u16(w_char * dest, int size, const char * src) {
     return (int)(u2 - dest);
 }
 
+<<<<<<< HEAD
+=======
+int u8_u16(std::vector<w_char>& dest, const std::string& src)
+{
+    dest.clear();
+    std::string::const_iterator u8 = src.begin();
+    std::string::const_iterator u8_max = src.end();
+
+    while (u8 < u8_max) {
+    w_char u2;
+    switch ((*u8) & 0xf0) {
+        case 0x00:
+        case 0x10:
+        case 0x20:
+        case 0x30:
+        case 0x40:
+        case 0x50:
+        case 0x60:
+        case 0x70: {
+            u2.h = 0;
+            u2.l = *u8;
+            break;
+        }
+        case 0x80:
+        case 0x90:
+        case 0xa0:
+        case 0xb0: {
+            HUNSPELL_WARNING(stderr, "UTF-8 encoding error. Unexpected continuation bytes in %ld. character position\n%s\n", static_cast<long>(std::distance(src.begin(), u8)), src.c_str());
+            u2.h = 0xff;
+            u2.l = 0xfd;
+            break;
+        }
+        case 0xc0:
+        case 0xd0: {    // 2-byte UTF-8 codes
+            if ((*(u8+1) & 0xc0) == 0x80) {
+                u2.h = (*u8 & 0x1f) >> 2;
+                u2.l = (*u8 << 6) + (*(u8+1) & 0x3f);
+                ++u8;
+            } else {
+                HUNSPELL_WARNING(stderr, "UTF-8 encoding error. Missing continuation byte in %ld. character position:\n%s\n", static_cast<long>(std::distance(src.begin(), u8)), src.c_str());
+                u2.h = 0xff;
+                u2.l = 0xfd;
+            }
+            break;
+        }
+        case 0xe0: {    // 3-byte UTF-8 codes
+            if ((*(u8+1) & 0xc0) == 0x80) {
+                u2.h = ((*u8 & 0x0f) << 4) + ((*(u8+1) & 0x3f) >> 2);
+                ++u8;
+                if ((*(u8+1) & 0xc0) == 0x80) {
+                    u2.l = (*u8 << 6) + (*(u8+1) & 0x3f);
+                    ++u8;
+                } else {
+                    HUNSPELL_WARNING(stderr, "UTF-8 encoding error. Missing continuation byte in %ld. character position:\n%s\n", static_cast<long>(std::distance(src.begin(), u8)), src.c_str());
+                    u2.h = 0xff;
+                    u2.l = 0xfd;
+                }
+            } else {
+                HUNSPELL_WARNING(stderr, "UTF-8 encoding error. Missing continuation byte in %ld. character position:\n%s\n", static_cast<long>(std::distance(src.begin(), u8)), src.c_str());
+                u2.h = 0xff;
+                u2.l = 0xfd;
+            }
+            break;
+        }
+        case 0xf0: {    // 4 or more byte UTF-8 codes
+            HUNSPELL_WARNING(stderr, "This UTF-8 encoding can't convert to UTF-16:\n%s\n", src.c_str());
+            u2.h = 0xff;
+            u2.l = 0xfd;
+            dest.push_back(u2);
+            return -1;
+        }
+    }
+    dest.push_back(u2);
+    ++u8;
+    }
+
+    return dest.size();
+}
+
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 void flag_qsort(unsigned short flags[], int begin, int end) {
     unsigned short reg;
     if (end > begin) {
@@ -329,7 +496,14 @@ int line_tok(const char * text, char *** lines, char breakchar) {
         p += strlen(p) + 1;
     }
     free(dup);
+<<<<<<< HEAD
     if (!l) free(*lines);
+=======
+    if (!l) {
+        free(*lines);
+        *lines = NULL;
+    }
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
     return l;
 }
 
@@ -342,7 +516,14 @@ char * line_uniq(char * text, char breakchar) {
     for ( i = 1; i < linenum; i++ ) {
         int dup = 0;
         for (int j = 0; j < i; j++) {
+<<<<<<< HEAD
             if (strcmp(lines[i], lines[j]) == 0) dup = 1;
+=======
+            if (strcmp(lines[i], lines[j]) == 0) {
+              dup = 1;
+              break;
+            }
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
         }
         if (!dup) {
             if ((i > 1) || (*(lines[0]) != '\0')) {
@@ -352,9 +533,15 @@ char * line_uniq(char * text, char breakchar) {
         }
     }
     for ( i = 0; i < linenum; i++ ) {
+<<<<<<< HEAD
         if (lines[i]) free(lines[i]);
     }
     if (lines) free(lines);
+=======
+        free(lines[i]);
+    }
+    free(lines);
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
     return text;
 }
 
@@ -419,6 +606,22 @@ char * line_uniq_app(char ** text, char breakchar) {
     }
  }
 
+<<<<<<< HEAD
+=======
+// append s to ends of every lines in text
+std::string& strlinecat(std::string& str, const std::string& apd)
+{
+    size_t pos = 0;
+    while ((pos = str.find('\n', pos)) != std::string::npos)
+    {
+       str.insert(pos, apd);
+       pos += apd.length()+1;
+    }
+    str.append(apd);
+    return str;
+}
+
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 // change \n to char c
 char * tr(char * text, char oldc, char newc) {
     char * p;
@@ -546,6 +749,41 @@ char * copy_field(char * dest, const char * morph, const char * var)
   return NULL;
 }
 
+<<<<<<< HEAD
+=======
+bool copy_field(std::string& dest, const std::string& morph, const std::string& var)
+{
+    if (morph.empty())
+        return false;
+    size_t pos = morph.find(var);
+    if (pos == std::string::npos)
+        return false;
+    dest.clear();
+    std::string beg(morph.substr(pos+MORPH_TAG_LEN, std::string::npos));
+
+    for (size_t i = 0; i < beg.size(); ++i)
+    {
+        const char c(beg[i]);
+        if (c == ' ' || c == '\t' || c == '\n')
+            break;
+        dest.push_back(c);
+    }
+
+    return true;
+}
+
+std::string& mystrrep(std::string& str, const std::string& search, const std::string& replace)
+{
+    size_t pos = 0;
+    while ((pos = str.find(search, pos)) != std::string::npos)
+    {
+       str.replace(pos, search.length(), replace);
+       pos += replace.length();
+    }
+    return str;
+}
+
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 char * mystrrep(char * word, const char * pat, const char * rep) {
     char * pos = strstr(word, pat);
     if (pos) {
@@ -582,6 +820,16 @@ char * mystrrep(char * word, const char * pat, const char * rep) {
    return 0;
  }
 
+<<<<<<< HEAD
+=======
+// reverse word 
+std::string &reverseword(std::string& word)
+{
+    std::reverse(word.begin(), word.end());
+    return word;
+}
+
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
  // reverse word (error: 1)
  int reverseword_utf(char * word) {
    w_char w[MAXWORDLEN];
@@ -599,6 +847,19 @@ char * mystrrep(char * word, const char * pat, const char * rep) {
    return 0;
  }
 
+<<<<<<< HEAD
+=======
+// reverse word
+std::string& reverseword_utf(std::string& word)
+{
+    std::vector<w_char> w;
+    u8_u16(w, word);
+    std::reverse(w.begin(), w.end());
+    u16_u8(word, w);
+    return word;
+}
+
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
  int uniqlist(char ** list, int n) {
    int i;
    if (n < 2) return n;
@@ -620,17 +881,51 @@ char * mystrrep(char * word, const char * pat, const char * rep) {
  }
  
  void freelist(char *** list, int n) {
+<<<<<<< HEAD
    if (list && *list && n > 0) {
      for (int i = 0; i < n; i++) if ((*list)[i]) free((*list)[i]);
+=======
+   if (list && *list) {
+     for (int i = 0; i < n; i++) free((*list)[i]);
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
      free(*list);
      *list = NULL;
    }
  }
+<<<<<<< HEAD
  
+=======
+
+namespace
+{ 
+    unsigned char cupper(const struct cs_info * csconv, int nIndex)
+    {
+	if (nIndex < 0 || nIndex > 255)
+            return nIndex;
+        return csconv[nIndex].cupper;
+    }
+
+    unsigned char clower(const struct cs_info * csconv, int nIndex)
+    {
+	if (nIndex < 0 || nIndex > 255)
+            return nIndex;
+        return csconv[nIndex].clower;
+    }
+
+    unsigned char ccase(const struct cs_info * csconv, int nIndex)
+    {
+	if (nIndex < 0 || nIndex > 255)
+            return nIndex;
+        return csconv[nIndex].ccase;
+    }
+}
+
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
  // convert null terminated string to all caps
  void mkallcap(char * p, const struct cs_info * csconv)
  {
    while (*p != '\0') {
+<<<<<<< HEAD
      *p = csconv[((unsigned char) *p)].cupper;
      p++;
    }
@@ -644,6 +939,42 @@ char * mystrrep(char * word, const char * pat, const char * rep) {
      p++;
    }
  }
+=======
+     *p = cupper(csconv, static_cast<unsigned char>(*p));
+     p++;
+   }
+ }
+
+// convert std::string to all caps
+std::string& mkallcap(std::string &s, const struct cs_info * csconv)
+{
+    for (std::string::iterator aI = s.begin(), aEnd = s.end(); aI != aEnd; ++aI)
+    {
+        *aI = cupper(csconv, static_cast<unsigned char>(*aI));
+    }
+    return s;
+}
+  
+// convert null terminated string to all little
+void mkallsmall(char * p, const struct cs_info * csconv)
+{
+    while (*p != '\0')
+    {
+        *p = clower(csconv, static_cast<unsigned char>(*p));
+        p++;
+    }
+}
+
+// convert std::string to all little
+std::string& mkallsmall(std::string &s, const struct cs_info * csconv)
+{
+    for (std::string::iterator aI = s.begin(), aEnd = s.end(); aI != aEnd; ++aI)
+    {
+        *aI = clower(csconv, static_cast<unsigned char>(*aI));
+    }
+    return s;
+}
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 
 void mkallsmall_utf(w_char * u, int nc, int langnum) {
     for (int i = 0; i < nc; i++) {
@@ -655,6 +986,20 @@ void mkallsmall_utf(w_char * u, int nc, int langnum) {
     }
 }
 
+<<<<<<< HEAD
+=======
+std::vector<w_char>& mkallsmall_utf(std::vector<w_char>& u, int nc, int langnum) {
+    for (int i = 0; i < nc; i++) {
+        unsigned short idx = (u[i].h << 8) + u[i].l;
+        if (idx != unicodetolower(idx, langnum)) {
+            u[i].h = (unsigned char) (unicodetolower(idx, langnum) >> 8);
+            u[i].l = (unsigned char) (unicodetolower(idx, langnum) & 0x00FF);
+        }
+    }
+    return u;
+}
+
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 void mkallcap_utf(w_char * u, int nc, int langnum) {
     for (int i = 0; i < nc; i++) {
         unsigned short idx = (u[i].h << 8) + u[i].l;
@@ -664,11 +1009,29 @@ void mkallcap_utf(w_char * u, int nc, int langnum) {
         }
     }
 }
+<<<<<<< HEAD
+=======
+
+std::vector<w_char>& mkallcap_utf(std::vector<w_char>& u, int nc, int langnum) {
+    for (int i = 0; i < nc; i++) {
+        unsigned short idx = (u[i].h << 8) + u[i].l;
+        if (idx != unicodetoupper(idx, langnum)) {
+            u[i].h = (unsigned char) (unicodetoupper(idx, langnum) >> 8);
+            u[i].l = (unsigned char) (unicodetoupper(idx, langnum) & 0x00FF);
+        }
+    }
+    return u;
+}
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
  
  // convert null terminated string to have initial capital
  void mkinitcap(char * p, const struct cs_info * csconv)
  {
+<<<<<<< HEAD
    if (*p != '\0') *p = csconv[((unsigned char)*p)].cupper;
+=======
+   if (*p != '\0')*p = cupper(csconv, static_cast<unsigned char>(*p));
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
  }
 
  // conversion function for protected memory
@@ -692,7 +1055,11 @@ void mkallcap_utf(w_char * u, int nc, int langnum) {
  {
    struct cs_info * csconv = get_current_cs(encoding);
    while (*p != '\0') {
+<<<<<<< HEAD
      *d++ = csconv[((unsigned char) *p)].cupper;
+=======
+     *d++ = cupper(csconv, static_cast<unsigned char>(*p));
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
      p++;
    }
    *d = '\0';
@@ -703,7 +1070,11 @@ void mkallcap_utf(w_char * u, int nc, int langnum) {
  {
    struct cs_info * csconv = get_current_cs(encoding);
    while (*p != '\0') {
+<<<<<<< HEAD
      *d++ = csconv[((unsigned char) *p)].clower;
+=======
+     *d++ = clower(csconv, static_cast<unsigned char>(*p));
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
      p++;
    }
    *d = '\0';
@@ -714,7 +1085,11 @@ void mkallcap_utf(w_char * u, int nc, int langnum) {
  {
    struct cs_info * csconv = get_current_cs(encoding);
    memcpy(d,p,(strlen(p)+1));
+<<<<<<< HEAD
    if (*p != '\0') *d= csconv[((unsigned char)*p)].cupper;
+=======
+   if (*p != '\0') *d = cupper(csconv, static_cast<unsigned char>(*p));
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
  }
 
 // these are simple character mappings for the 
@@ -5482,6 +5857,7 @@ struct cs_info * get_current_cs(const char * es) {
   nsCOMPtr<nsIUnicodeDecoder> decoder; 
 
   nsresult rv;
+<<<<<<< HEAD
   nsCOMPtr<nsICharsetConverterManager> ccm = do_GetService(kCharsetConverterManagerCID, &rv);
   if (NS_FAILED(rv))
     return ccs;
@@ -5500,6 +5876,21 @@ struct cs_info * get_current_cs(const char * es) {
 
   for (unsigned int i = 0; i <= 0xff; ++i) {
     PRBool success = PR_FALSE;
+=======
+
+  nsAutoCString label(es);
+  nsAutoCString encoding;
+  if (!EncodingUtils::FindEncodingForLabelNoReplacement(label, encoding)) {
+    return ccs;
+  }
+  encoder = EncodingUtils::EncoderForEncoding(encoding);
+  decoder = EncodingUtils::DecoderForEncoding(encoding);
+  encoder->SetOutputErrorBehavior(encoder->kOnError_Signal, nullptr, '?');
+  decoder->SetInputErrorBehavior(decoder->kOnError_Signal);
+
+  for (unsigned int i = 0; i <= 0xff; ++i) {
+    bool success = false;
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
     // We want to find the upper/lowercase equivalents of each byte
     // in this 1-byte character encoding.  Call our encoding/decoding
     // APIs separately for each byte since they may reject some of the
@@ -5509,8 +5900,13 @@ struct cs_info * get_current_cs(const char * es) {
       if (i == 0)
         break;
       const char source = char(i);
+<<<<<<< HEAD
       PRUnichar uni, uniCased;
       PRInt32 charLength = 1, uniLength = 1;
+=======
+      char16_t uni, uniCased;
+      int32_t charLength = 1, uniLength = 1;
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 
       rv = decoder->Convert(&source, &charLength, &uni, &uniLength);
       // Explicitly check NS_OK because we don't want to allow
@@ -5531,7 +5927,11 @@ struct cs_info * get_current_cs(const char * es) {
       if (rv != NS_OK || charLength != 1 || uniLength != 1)
         break;
 
+<<<<<<< HEAD
       success = PR_TRUE;
+=======
+      success = true;
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
     } while (0);
 
     if (success) {
@@ -5558,8 +5958,13 @@ char * get_casechars(const char * enc) {
     char expw[MAXLNLEN];
     char * p =  expw;
     for (int i = 0; i <= 255; i++) {
+<<<<<<< HEAD
         if ((csconv[i].cupper != csconv[i].clower)) {
     	    *p = (char) i;
+=======
+        if (cupper(csconv, i) != clower(csconv, i)) {
+    	    *p = static_cast<char>(i);
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
     	    p++;
         }
     }
@@ -5662,7 +6067,11 @@ unsigned short unicodetoupper(unsigned short c, int langnum)
   return static_cast<unsigned short>(u_toupper(c));
 #else
 #ifdef MOZILLA_CLIENT
+<<<<<<< HEAD
   return ToUpperCase((PRUnichar) c);
+=======
+  return ToUpperCase((char16_t) c);
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 #else
   return (utf_tbl) ? utf_tbl[c].cupper : c;
 #endif
@@ -5680,7 +6089,11 @@ unsigned short unicodetolower(unsigned short c, int langnum)
   return static_cast<unsigned short>(u_tolower(c));
 #else
 #ifdef MOZILLA_CLIENT
+<<<<<<< HEAD
   return ToLowerCase((PRUnichar) c);
+=======
+  return ToLowerCase((char16_t) c);
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 #else
   return (utf_tbl) ? utf_tbl[c].clower : c;
 #endif
@@ -5704,11 +6117,21 @@ int get_captype(char * word, int nl, cs_info * csconv) {
    int firstcap = 0;
    if (csconv == NULL) return NOCAP;
    for (char * q = word; *q != '\0'; q++) {
+<<<<<<< HEAD
       if (csconv[*((unsigned char *)q)].ccase) ncap++;
       if (csconv[*((unsigned char *)q)].cupper == csconv[*((unsigned char *)q)].clower) nneutral++;
    }
    if (ncap) {
      firstcap = csconv[*((unsigned char *) word)].ccase;
+=======
+      unsigned char nIndex = static_cast<unsigned char>(*q);
+      if (ccase(csconv, nIndex)) ncap++;
+      if (cupper(csconv, nIndex) == clower(csconv, nIndex)) nneutral++;
+   }
+   if (ncap) {
+     unsigned char nIndex = static_cast<unsigned char>(word[0]);
+     firstcap = csconv[nIndex].ccase;
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
    }
 
    // now finally set the captype
@@ -5757,7 +6180,10 @@ int get_captype_utf8(w_char * word, int nl, int langnum) {
    return HUHCAP;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 // strip all ignored characters in the string
 void remove_ignored_chars_utf(char * word, unsigned short ignored_chars[], int ignored_len)
 {
@@ -5775,6 +6201,42 @@ void remove_ignored_chars_utf(char * word, unsigned short ignored_chars[], int i
    if (j < i) u16_u8(word, MAXWORDUTF8LEN, w2, j);
 }
 
+<<<<<<< HEAD
+=======
+namespace
+{
+    union w_s
+    {
+        w_char w;
+        unsigned short s;
+    };
+
+    unsigned short asushort(w_char in)
+    {
+        w_s c;
+        c.w = in;
+        return c.s;
+    }
+}
+
+// strip all ignored characters in the string
+std::string& remove_ignored_chars_utf(std::string& word, unsigned short ignored_chars[], int ignored_len)
+{
+    std::vector<w_char> w;
+    std::vector<w_char> w2;
+    u8_u16(w, word);
+
+    for (size_t i = 0; i < w.size(); ++i)
+    {
+        if (!flag_bsearch(ignored_chars, asushort(w[i]), ignored_len))
+            w2.push_back(w[i]);
+    }
+
+    u16_u8(word, w2);
+    return word;
+}
+
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 // strip all ignored characters in the string
 void remove_ignored_chars(char * word, char * ignored_chars)
 {
@@ -5787,6 +6249,35 @@ void remove_ignored_chars(char * word, char * ignored_chars)
    *word = '\0';
 }
 
+<<<<<<< HEAD
+=======
+namespace
+{
+    class is_any_of
+    {
+    public:
+        is_any_of(const std::string& in)
+            : chars(in)
+        {
+        }
+
+        bool operator()(char c)
+        {
+            return chars.find(c) != std::string::npos;
+        }
+    private:
+        const std::string& chars;
+    };
+}
+
+// strip all ignored characters in the string
+std::string& remove_ignored_chars(std::string& word, const std::string& ignored_chars)
+{
+   word.erase(std::remove_if(word.begin(), word.end(), is_any_of(ignored_chars)));
+   return word;
+}
+
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 int parse_string(char * line, char ** out, int ln)
 {
    char * tp = line;

@@ -8,6 +8,7 @@
 #include "htypes.hxx"
 #include "filemgr.hxx"
 
+<<<<<<< HEAD
 #ifdef HUNSPELL_CHROME_CLIENT
 #include <string>
 #include <map>
@@ -17,10 +18,13 @@
 #include "third_party/hunspell/google/bdict_reader.h"
 #endif
 
+=======
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 enum flag { FLAG_CHAR, FLAG_LONG, FLAG_NUM, FLAG_UNI };
 
 class LIBHUNSPELL_DLL_EXPORTED HashMgr
 {
+<<<<<<< HEAD
 #ifdef HUNSPELL_CHROME_CLIENT
   // Not owned by this class, owned by the Hunspell object.
   hunspell::BDictReader* bdict_reader;
@@ -30,6 +34,10 @@ class LIBHUNSPELL_DLL_EXPORTED HashMgr
   int               tablesize;
   struct hentry **  tableptr;
   int               userword;
+=======
+  int               tablesize;
+  struct hentry **  tableptr;
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
   flag              flag_mode;
   int               complexprefixes;
   int               utf8;
@@ -49,6 +57,7 @@ class LIBHUNSPELL_DLL_EXPORTED HashMgr
 
 
 public:
+<<<<<<< HEAD
 #ifdef HUNSPELL_CHROME_CLIENT
   HashMgr(hunspell::BDictReader* reader);
 
@@ -66,6 +75,9 @@ public:
 #else
   HashMgr(const char * tpath, const char * apath, const char * key = NULL);
 #endif
+=======
+  HashMgr(const char * tpath, const char * apath, const char * key = NULL);
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
   ~HashMgr();
 
   struct hentry * lookup(const char *) const;
@@ -90,6 +102,7 @@ private:
     int al, const char * desc, bool onlyupcase);
   int load_config(const char * affpath, const char * key);
   int parse_aliasf(char * line, FileMgr * af);
+<<<<<<< HEAD
 
 #ifdef HUNSPELL_CHROME_CLIENT
   // Loads the AF lines from a BDICT.
@@ -124,6 +137,8 @@ private:
   HEntryCache hentry_cache;
 #endif
 
+=======
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
   int add_hidden_capitalized_word(char * word, int wbl, int wcl,
     unsigned short * flags, int al, char * dp, int captype);
   int parse_aliasm(char * line, FileMgr * af);

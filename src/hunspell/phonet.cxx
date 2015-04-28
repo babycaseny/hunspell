@@ -87,7 +87,12 @@ int phonet (const char * inword, char * target,
     char word[MAXPHONETUTF8LEN + 1];
     if (len == -1) len = strlen(inword);
     if (len > MAXPHONETUTF8LEN) return 0;
+<<<<<<< HEAD
     strcpy(word, inword);
+=======
+    strncpy(word, inword, MAXPHONETUTF8LEN);
+    word[MAXPHONETUTF8LEN] = '\0';
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
   
     /**  check word  **/
     i = j = z = 0;

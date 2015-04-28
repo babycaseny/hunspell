@@ -5,10 +5,13 @@
 #include "suggestmgr.hxx"
 #include "langnum.hxx"
 
+<<<<<<< HEAD
 #ifdef HUNSPELL_CHROME_CLIENT
 #include "third_party/hunspell/google/bdict_reader.h"
 #endif
 
+=======
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 #define  SPELL_XML "<?xml?>"
 
 #define MAXDIC 20
@@ -23,13 +26,24 @@
 
 class LIBHUNSPELL_DLL_EXPORTED Hunspell
 {
+<<<<<<< HEAD
+=======
+private:
+  Hunspell(const Hunspell&);
+  Hunspell& operator = (const Hunspell&);
+private:
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
   AffixMgr*       pAMgr;
   HashMgr*        pHMgr[MAXDIC];
   int             maxdic;
   SuggestMgr*     pSMgr;
+<<<<<<< HEAD
 #ifndef HUNSPELL_CHROME_CLIENT // We are using BDict instead.
   char *          affixpath;
 #endif
+=======
+  char *          affixpath;
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
   char *          encoding;
   struct cs_info * csconv;
   int             langnum;
@@ -37,15 +51,19 @@ class LIBHUNSPELL_DLL_EXPORTED Hunspell
   int             complexprefixes;
   char**          wordbreak;
 
+<<<<<<< HEAD
 #ifdef HUNSPELL_CHROME_CLIENT
   // Not owned by us, owned by the Hunspell object.
   hunspell::BDictReader* bdict_reader;
 #endif
 
+=======
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 public:
 
   /* Hunspell(aff, dic) - constructor of Hunspell class
    * input: path of affix file and dictionary file
+<<<<<<< HEAD
    */
 
 #ifdef HUNSPELL_CHROME_CLIENT
@@ -59,6 +77,20 @@ public:
   /* load extra dictionaries (only dic files) */
   int add_dic(const char * dpath, const char * key = NULL);
 #endif
+=======
+   *
+   * In WIN32 environment, use UTF-8 encoded paths started with the long path
+   * prefix \\\\?\\ to handle system-independent character encoding and very
+   * long path names (without the long path prefix Hunspell will use fopen()
+   * with system-dependent character encoding instead of _wfopen()).
+   */
+
+  Hunspell(const char * affpath, const char * dpath, const char * key = NULL);
+  ~Hunspell();
+
+  /* load extra dictionaries (only dic files) */
+  int add_dic(const char * dpath, const char * key = NULL);
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 
   /* spell(word) - spellcheck word
    * output: 0 = bad word, not 0 = good word
@@ -82,6 +114,19 @@ public:
 
   int suggest(char*** slst, const char * word);
 
+<<<<<<< HEAD
+=======
+  /* Suggest words from suffix rules 
+   * suffix_suggest(suggestions, root_word) 
+   * input: pointer to an array of strings pointer and the  word
+   *   array of strings pointer (here *slst) may not be initialized
+   * output: number of suggestions in string array, and suggestions in
+   *   a newly allocated array of strings (*slts will be NULL when number
+   *   of suggestion equals 0.)
+   */
+  int suffix_suggest(char*** slst, const char * root_word);
+
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
   /* deallocate suggestion lists */
 
   void free_list(char *** slst, int n);
@@ -148,6 +193,12 @@ public:
   const char * get_version();
 
   int get_langnum() const;
+<<<<<<< HEAD
+=======
+
+  /* need for putdic */
+  int input_conv(const char * word, char * dest);
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
   
   /* experimental and deprecated functions */
 

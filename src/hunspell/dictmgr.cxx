@@ -5,6 +5,10 @@
 #include <stdio.h>
 
 #include "dictmgr.hxx"
+<<<<<<< HEAD
+=======
+#include "csutil.hxx"
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 
 DictMgr::DictMgr(const char * dictpath, const char * etype) : numdict(0)
 {
@@ -57,7 +61,11 @@ int  DictMgr::parse_file(const char * dictpath, const char * etype)
 
     // open the dictionary list file
     FILE * dictlst;
+<<<<<<< HEAD
     dictlst = fopen(dictpath,"r");
+=======
+    dictlst = myfopen(dictpath,"r");
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
     if (!dictlst) {
       return 1;
     }
@@ -100,7 +108,12 @@ int  DictMgr::parse_file(const char * dictpath, const char * etype)
                     case 3:
                        free(pdict->region);
                        pdict->region=NULL;
+<<<<<<< HEAD
                     case 2: //deliberate fallthrough
+=======
+                       /* FALLTHROUGH */
+                    case 2:
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
                        free(pdict->lang);
                        pdict->lang=NULL;
                     default:

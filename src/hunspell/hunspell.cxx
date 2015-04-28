@@ -7,6 +7,7 @@
 
 #include "hunspell.hxx"
 #include "hunspell.h"
+<<<<<<< HEAD
 #ifndef HUNSPELL_CHROME_CLIENT
 #ifndef MOZILLA_CLIENT
 #    include "config.h"
@@ -19,11 +20,22 @@ Hunspell::Hunspell(const unsigned char* bdict_data, size_t bdict_length)
 #else
 Hunspell::Hunspell(const char * affpath, const char * dpath, const char * key)
 #endif
+=======
+#ifndef MOZILLA_CLIENT
+#    include "config.h"
+#endif
+#include "csutil.hxx"
+
+#include <string>
+
+Hunspell::Hunspell(const char * affpath, const char * dpath, const char * key)
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 {
     encoding = NULL;
     csconv = NULL;
     utf8 = 0;
     complexprefixes = 0;
+<<<<<<< HEAD
 #ifndef HUNSPELL_CHROME_CLIENT
     affixpath = mystrdup(affpath);
 #endif
@@ -38,6 +50,11 @@ Hunspell::Hunspell(const char * affpath, const char * dpath, const char * key)
 
     pAMgr = new AffixMgr(bdict_reader, pHMgr, &maxdic);
 #else
+=======
+    affixpath = mystrdup(affpath);
+    maxdic = 0;
+
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
     /* first set up the hash manager */
     pHMgr[0] = new HashMgr(dpath, affpath, key);
     if (pHMgr[0]) maxdic = 1;
@@ -45,7 +62,10 @@ Hunspell::Hunspell(const char * affpath, const char * dpath, const char * key)
     /* next set up the affix manager */
     /* it needs access to the hash manager lookup methods */
     pAMgr = new AffixMgr(affpath, pHMgr, &maxdic, key);
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 
     /* get the preferred try string and the dictionary */
     /* encoding from the Affix Manager for that dictionary */
@@ -59,18 +79,27 @@ Hunspell::Hunspell(const char * affpath, const char * dpath, const char * key)
     wordbreak = pAMgr->get_breaktable();
 
     /* and finally set up the suggestion manager */
+<<<<<<< HEAD
 #ifdef HUNSPELL_CHROME_CLIENT
     pSMgr = new SuggestMgr(bdict_reader, try_string, MAXSUGGESTION, pAMgr);
 #else
     pSMgr = new SuggestMgr(try_string, MAXSUGGESTION, pAMgr);
 #endif
+=======
+    pSMgr = new SuggestMgr(try_string, MAXSUGGESTION, pAMgr);
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
     if (try_string) free(try_string);
 }
 
 Hunspell::~Hunspell()
 {
+<<<<<<< HEAD
     if (pSMgr) delete pSMgr;
     if (pAMgr) delete pAMgr;
+=======
+    delete pSMgr;
+    delete pAMgr;
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
     for (int i = 0; i < maxdic; i++) delete pHMgr[i];
     maxdic = 0;
     pSMgr = NULL;
@@ -81,6 +110,7 @@ Hunspell::~Hunspell()
     csconv= NULL;
     if (encoding) free(encoding);
     encoding = NULL;
+<<<<<<< HEAD
 #ifdef HUNSPELL_CHROME_CLIENT
     if (bdict_reader) delete bdict_reader;
     bdict_reader = NULL;
@@ -91,6 +121,12 @@ Hunspell::~Hunspell()
 }
 
 #ifndef HUNSPELL_CHROME_CLIENT
+=======
+    if (affixpath) free(affixpath);
+    affixpath = NULL;
+}
+
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 // load extra dictionaries
 int Hunspell::add_dic(const char * dpath, const char * key) {
     if (maxdic == MAXDIC || !affixpath) return 1;
@@ -98,7 +134,10 @@ int Hunspell::add_dic(const char * dpath, const char * key) {
     if (pHMgr[maxdic]) maxdic++; else return 1;
     return 0;
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 
 // make a copy of src at destination while removing all leading
 // blanks and removing any trailing periods after recording
@@ -338,6 +377,10 @@ int Hunspell::is_keepcase(const hentry * rv) {
 
 /* insert a word to the beginning of the suggestion array and return ns */
 int Hunspell::insert_sug(char ***slst, char * word, int ns) {
+<<<<<<< HEAD
+=======
+    if (!*slst) return ns;
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
     char * dup = mystrdup(word);
     if (!dup) return ns;
     if (ns == MAXSUGGESTION) {
@@ -351,15 +394,25 @@ int Hunspell::insert_sug(char ***slst, char * word, int ns) {
 
 int Hunspell::spell(const char * word, int * info, char ** root)
 {
+<<<<<<< HEAD
 #ifdef HUNSPELL_CHROME_CLIENT
   if (pHMgr[0]) pHMgr[0]->EmptyHentryCache();
 #endif
+=======
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
   struct hentry * rv=NULL;
   // need larger vector. For example, Turkish capital letter I converted a
   // 2-byte UTF-8 character (dotless i) by mkallsmall.
   char cw[MAXWORDUTF8LEN];
   char wspace[MAXWORDUTF8LEN];
   w_char unicw[MAXWORDLEN];
+<<<<<<< HEAD
+=======
+
+  int info2 = 0;
+  if (!info) info = &info2; else *info = 0;
+
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
   // Hunspell supports XML input of the simplified API (see manual)
   if (strcmp(word, SPELL_XML) == 0) return 1;
   int nc = strlen(word);
@@ -378,7 +431,16 @@ int Hunspell::spell(const char * word, int * info, char ** root)
   if (rl && rl->conv(word, wspace)) wl = cleanword2(cw, wspace, unicw, &nc, &captype, &abbv);
   else wl = cleanword2(cw, word, unicw, &nc, &captype, &abbv);
 
+<<<<<<< HEAD
   int info2 = 0;
+=======
+#ifdef MOZILLA_CLIENT
+  // accept the abbreviated words without dots
+  // workaround for the incomplete tokenization of Mozilla
+  abbv = 1;
+#endif
+
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
   if (wl == 0 || maxdic == 0) return 1;
   if (root) *root = NULL;
 
@@ -396,6 +458,7 @@ int Hunspell::spell(const char * word, int * info, char ** root)
     } else break;
   }
   if ((i == wl) && (nstate == NNUM)) return 1;
+<<<<<<< HEAD
   if (!info) info = &info2; else *info = 0;
 
   switch(captype) {
@@ -403,6 +466,16 @@ int Hunspell::spell(const char * word, int * info, char ** root)
      case HUHINITCAP:
             *info += SPELL_ORIGCAP;
      case NOCAP: {
+=======
+
+  switch(captype) {
+     case HUHCAP:
+            /* FALLTHROUGH */
+     case HUHINITCAP:
+            *info += SPELL_ORIGCAP;
+            /* FALLTHROUGH */
+     case NOCAP:
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
             rv = checkword(cw, info, root);
             if ((abbv) && !(rv)) {
                 memcpy(wspace,cw,wl);
@@ -411,7 +484,10 @@ int Hunspell::spell(const char * word, int * info, char ** root)
                 rv = checkword(wspace, info, root);
             }
             break;
+<<<<<<< HEAD
          }
+=======
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
      case ALLCAP: {
             *info += SPELL_ORIGCAP;
             rv = checkword(cw, info, root);
@@ -426,7 +502,11 @@ int Hunspell::spell(const char * word, int * info, char ** root)
             // Spec. prefix handling for Catalan, French, Italian:
 	    // prefixes separated by apostrophe (SANT'ELIA -> Sant'+Elia).
             if (pAMgr && strchr(cw, '\'')) {
+<<<<<<< HEAD
                 wl = mkallsmall2(cw, unicw, nc);
+=======
+                mkallsmall2(cw, unicw, nc);
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
         	//There are no really sane circumstances where this could fail,
         	//but anyway...
         	if (char * apostrophe = strchr(cw, '\'')) {
@@ -435,7 +515,11 @@ int Hunspell::spell(const char * word, int * info, char ** root)
             	        *apostrophe = '\0';
             	        wl2 = u8_u16(tmpword, MAXWORDLEN, cw);
             	        *apostrophe = '\'';
+<<<<<<< HEAD
 		        if (wl2 < nc) {
+=======
+		        if (wl2 >= 0 && wl2 < nc) {
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 		            mkinitcap2(apostrophe + 1, unicw + wl2 + 1, nc - wl2 - 1);
 			    rv = checkword(cw, info, root);
 			    if (rv) break;
@@ -596,6 +680,7 @@ int Hunspell::spell(const char * word, int * info, char ** root)
 struct hentry * Hunspell::checkword(const char * w, int * info, char ** root)
 {
   struct hentry * he = NULL;
+<<<<<<< HEAD
   int len, i;
   char w2[MAXWORDUTF8LEN];
   const char * word;
@@ -603,6 +688,16 @@ struct hentry * Hunspell::checkword(const char * w, int * info, char ** root)
   char * ignoredchars = pAMgr->get_ignore();
   if (ignoredchars != NULL) {
      strcpy(w2, w);
+=======
+  bool usebuffer = false;
+  int len, i;
+  std::string w2;
+  const char * word;
+
+  char * ignoredchars = pAMgr ? pAMgr->get_ignore() : NULL;
+  if (ignoredchars != NULL) {
+     w2.assign(w);
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
      if (utf8) {
         int ignoredchars_utf16_len;
         unsigned short * ignoredchars_utf16 = pAMgr->get_ignore_utf16(&ignoredchars_utf16_len);
@@ -610,7 +705,12 @@ struct hentry * Hunspell::checkword(const char * w, int * info, char ** root)
      } else {
         remove_ignored_chars(w2,ignoredchars);
      }
+<<<<<<< HEAD
      word = w2;
+=======
+     word = w2.c_str();
+     usebuffer = true;
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
   } else word = w;
 
   len = strlen(word);
@@ -618,6 +718,7 @@ struct hentry * Hunspell::checkword(const char * w, int * info, char ** root)
   if (!len)
       return NULL;
 
+<<<<<<< HEAD
 #ifdef HUNSPELL_CHROME_CLIENT
   // We need to check if the word length is valid to make coverity (Event
   // fixed_size_dest: Possible overrun of N byte fixed size buffer) happy.
@@ -630,10 +731,24 @@ struct hentry * Hunspell::checkword(const char * w, int * info, char ** root)
     if (word != w2) {
       strcpy(w2, word);
       word = w2;
+=======
+  // word reversing wrapper for complex prefixes
+  if (complexprefixes) {
+    if (!usebuffer) {
+      w2.assign(word);
+      usebuffer = true;
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
     }
     if (utf8) reverseword_utf(w2); else reverseword(w2);
   }
 
+<<<<<<< HEAD
+=======
+  if (usebuffer) {
+      word = w2.c_str();
+  }
+
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
   // look word in hash table
   for (i = 0; (i < maxdic) && !he; i ++) {
   he = (pHMgr[i])->lookup(word);
@@ -652,7 +767,11 @@ struct hentry * Hunspell::checkword(const char * w, int * info, char ** root)
   }
 
   // he = next not needaffix, onlyincompound homonym or onlyupcase word
+<<<<<<< HEAD
   while (he && (he->astr) &&
+=======
+  while (he && (he->astr) && pAMgr &&
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
     ((pAMgr->get_needaffix() && TESTAFF(he->astr, pAMgr->get_needaffix(), he->alen)) ||
        (pAMgr->get_onlyincompound() && TESTAFF(he->astr, pAMgr->get_onlyincompound(), he->alen)) ||
        (info && (*info & SPELL_INITCAP) && TESTAFF(he->astr, ONLYUPCASEFLAG, he->alen))
@@ -714,9 +833,12 @@ struct hentry * Hunspell::checkword(const char * w, int * info, char ** root)
 
 int Hunspell::suggest(char*** slst, const char * word)
 {
+<<<<<<< HEAD
 #ifdef HUNSPELL_CHROME_CLIENT
   if (pHMgr[0]) pHMgr[0]->EmptyHentryCache();
 #endif
+=======
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
   int onlycmpdsug = 0;
   char cw[MAXWORDUTF8LEN];
   char wspace[MAXWORDUTF8LEN];
@@ -792,11 +914,17 @@ int Hunspell::suggest(char*** slst, const char * word)
                         char * dot = strchr(cw, '.');
 		        if (dot && (dot > cw)) {
 		            int captype_;
+<<<<<<< HEAD
 		            if (utf8) {
+=======
+		            if (utf8)
+                            {
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 		               w_char w_[MAXWORDLEN];
 			       int wl_ = u8_u16(w_, MAXWORDLEN, dot + 1);
 		               captype_ = get_captype_utf8(w_, wl_, langnum);
 		            } else captype_ = get_captype(dot+1, strlen(dot+1), csconv);
+<<<<<<< HEAD
 		    	    if (captype_ == INITCAP) {
                         	char * st = mystrdup(cw);
                         	if (st) st = (char *) realloc(st, wl + 2);
@@ -805,6 +933,24 @@ int Hunspell::suggest(char*** slst, const char * word)
                         		strcpy(st + (dot - cw) + 2, dot + 1);
                     			ns = insert_sug(slst, st, ns);
 					free(st);
+=======
+		    	    if (captype_ == INITCAP)
+                            {
+                        	char * st = mystrdup(cw);
+                        	if (st)
+                        	{
+                                    char *newst = (char *) realloc(st, wl + 2);
+                                    if (newst == NULL)
+                                        free(st);
+                                    st = newst;
+                        	}
+				if (st)
+                                {
+                        	    st[(dot - cw) + 1] = ' ';
+                        	    strcpy(st + (dot - cw) + 2, dot + 1);
+                    		    ns = insert_sug(slst, st, ns);
+				    free(st);
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 				}
 		    	    }
 		        }
@@ -890,7 +1036,11 @@ int Hunspell::suggest(char*** slst, const char * word)
               *pos = '\0';
               strcpy(w, (*slst)[j]);
               strcat(w, pos + 1);
+<<<<<<< HEAD
               spell(w, &info, NULL);
+=======
+              (void)spell(w, &info, NULL);
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
               if ((info & SPELL_COMPOUND) && (info & SPELL_FORBIDDEN)) {
                   *pos = ' ';
               } else *pos = '-';
@@ -1072,12 +1222,17 @@ char * Hunspell::get_dic_encoding()
 }
 
 #ifdef HUNSPELL_EXPERIMENTAL
+<<<<<<< HEAD
 // XXX need UTF-8 support
+=======
+// XXX UTF-8 support is OK?
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 int Hunspell::suggest_auto(char*** slst, const char * word)
 {
   char cw[MAXWORDUTF8LEN];
   char wspace[MAXWORDUTF8LEN];
   if (!pSMgr || maxdic == 0) return 0;
+<<<<<<< HEAD
   int wl = strlen(word);
   if (utf8) {
     if (wl >= MAXWORDUTF8LEN) return 0;
@@ -1087,6 +1242,24 @@ int Hunspell::suggest_auto(char*** slst, const char * word)
   int captype = 0;
   int abbv = 0;
   wl = cleanword(cw, word, &captype, &abbv);
+=======
+  w_char unicw[MAXWORDLEN];
+  int nc = strlen(word);
+  if (utf8) {
+    if (nc >= MAXWORDUTF8LEN) return 0;
+  } else {
+    if (nc >= MAXWORDLEN) return 0;
+  }
+  int captype = 0;
+  int abbv = 0;
+  int wl = 0;
+
+  // input conversion
+  RepList * rl = (pAMgr) ? pAMgr->get_iconvtable() : NULL;
+  if (rl && rl->conv(word, wspace)) wl = cleanword2(cw, wspace, unicw, &nc, &captype, &abbv);
+  else wl = cleanword2(cw, word, unicw, &nc, &captype, &abbv);
+
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
   if (wl == 0) return 0;
   int ns = 0;
   *slst = NULL; // HU, nsug in pSMgr->suggest
@@ -1100,7 +1273,11 @@ int Hunspell::suggest_auto(char*** slst, const char * word)
 
      case INITCAP: {
                      memcpy(wspace,cw,(wl+1));
+<<<<<<< HEAD
                      mkallsmall(wspace);
+=======
+                     mkallsmall2(wspace, unicw, nc);
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
                      ns = pSMgr->suggest_auto(slst, wspace, ns);
                      for (int j=0; j < ns; j++)
                        mkinitcap((*slst)[j]);
@@ -1114,7 +1291,11 @@ int Hunspell::suggest_auto(char*** slst, const char * word)
                      ns = pSMgr->suggest_auto(slst, cw, ns);
                      if (ns == 0) {
                         memcpy(wspace,cw,(wl+1));
+<<<<<<< HEAD
                         mkallsmall(wspace);
+=======
+                        mkallsmall2(wspace, unicw, nc);
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
                         ns = pSMgr->suggest_auto(slst, wspace, ns);
                      }
                      break;
@@ -1122,7 +1303,11 @@ int Hunspell::suggest_auto(char*** slst, const char * word)
 
      case ALLCAP: {
                      memcpy(wspace,cw,(wl+1));
+<<<<<<< HEAD
                      mkallsmall(wspace);
+=======
+                     mkallsmall2(wspace, unicw, nc);
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
                      ns = pSMgr->suggest_auto(slst, wspace, ns);
 
                      mkinitcap(wspace);
@@ -1166,6 +1351,19 @@ int Hunspell::suggest_auto(char*** slst, const char * word)
           }
       }
   }
+<<<<<<< HEAD
+=======
+
+  // output conversion
+  rl = (pAMgr) ? pAMgr->get_oconvtable() : NULL;
+  for (int j = 0; rl && j < ns; j++) {
+    if (rl->conv((*slst)[j], wspace)) {
+      free((*slst)[j]);
+      (*slst)[j] = mystrdup(wspace);
+    }
+  }
+
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
   // END OF LANG_hu section
   return ns;
 }
@@ -1194,6 +1392,7 @@ int Hunspell::stem(char*** slst, char ** desc, int n)
     }
 
     char **pl;
+<<<<<<< HEAD
     char tok[MAXLNLEN];
     strcpy(tok, s);
     char * alt = strstr(tok, " | ");
@@ -1202,6 +1401,14 @@ int Hunspell::stem(char*** slst, char ** desc, int n)
         alt = strstr(alt, " | ");
     }
     int pln = line_tok(tok, &pl, MSEP_ALT);
+=======
+    std::string tok(s);
+    size_t alt = 0;
+    while ((alt = tok.find(" | ", alt)) != std::string::npos) {
+        tok[alt + 1] = MSEP_ALT;
+    }
+    int pln = line_tok(tok.c_str(), &pl, MSEP_ALT);
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
     for (int k = 0; k < pln; k++) {
         // add derivational suffixes
         if (strstr(pl[k], MORPH_DERI_SFX)) {
@@ -1249,6 +1456,7 @@ int Hunspell::suggest_pos_stems(char*** slst, const char * word)
   char cw[MAXWORDUTF8LEN];
   char wspace[MAXWORDUTF8LEN];
   if (! pSMgr || maxdic == 0) return 0;
+<<<<<<< HEAD
   int wl = strlen(word);
   if (utf8) {
     if (wl >= MAXWORDUTF8LEN) return 0;
@@ -1258,6 +1466,24 @@ int Hunspell::suggest_pos_stems(char*** slst, const char * word)
   int captype = 0;
   int abbv = 0;
   wl = cleanword(cw, word, &captype, &abbv);
+=======
+  w_char unicw[MAXWORDLEN];
+  int nc = strlen(word);
+  if (utf8) {
+    if (nc >= MAXWORDUTF8LEN) return 0;
+  } else {
+    if (nc >= MAXWORDLEN) return 0;
+  }
+  int captype = 0;
+  int abbv = 0;
+  int wl = 0;
+
+  // input conversion
+  RepList * rl = (pAMgr) ? pAMgr->get_iconvtable() : NULL;
+  if (rl && rl->conv(word, wspace)) wl = cleanword2(cw, wspace, unicw, &nc, &captype, &abbv);
+  else wl = cleanword2(cw, word, unicw, &nc, &captype, &abbv);
+
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
   if (wl == 0) return 0;
 
   int ns = 0; // ns=0 = normalized input
@@ -1285,7 +1511,11 @@ int Hunspell::suggest_pos_stems(char*** slst, const char * word)
 
                      if (ns == 0 || ((*slst)[0][0] == '#')) {
                         memcpy(wspace,cw,(wl+1));
+<<<<<<< HEAD
                         mkallsmall(wspace);
+=======
+                        mkallsmall2(wspace, unicw, nc);
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
                         ns = pSMgr->suggest_pos_stems(slst, wspace, ns);
                      }
 
@@ -1298,17 +1528,38 @@ int Hunspell::suggest_pos_stems(char*** slst, const char * word)
                      if (ns != 0) break;
 
                      memcpy(wspace,cw,(wl+1));
+<<<<<<< HEAD
                      mkallsmall(wspace);
                      ns = pSMgr->suggest_pos_stems(slst, wspace, ns);
 
                      if (ns == 0) {
                          mkinitcap(wspace);
                          ns = pSMgr->suggest_pos_stems(slst, wspace, ns);
+=======
+                     mkallsmall2(wspace, unicw, nc);
+                     ns = pSMgr->suggest_pos_stems(slst, wspace, ns);
+
+                     if (ns == 0) {
+                       mkinitcap(wspace);
+                       ns = pSMgr->suggest_pos_stems(slst, wspace, ns);
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
                      }
                      break;
                    }
   }
 
+<<<<<<< HEAD
+=======
+  // output conversion
+  rl = (pAMgr) ? pAMgr->get_oconvtable() : NULL;
+  for (int j = 0; rl && j < ns; j++) {
+    if (rl->conv((*slst)[j], wspace)) {
+      free((*slst)[j]);
+      (*slst)[j] = mystrdup(wspace);
+    }
+  }
+
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
   return ns;
 }
 #endif // END OF HUNSPELL_EXPERIMENTAL CODE
@@ -1712,6 +1963,16 @@ int Hunspell::get_langnum() const
    return langnum;
 }
 
+<<<<<<< HEAD
+=======
+int Hunspell::input_conv(const char * word, char * dest)
+{
+  RepList * rl = (pAMgr) ? pAMgr->get_iconvtable() : NULL;
+  return (rl && rl->conv(word, dest));
+}
+
+
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 // return the beginning of the element (attr == NULL) or the attribute
 const char * Hunspell::get_xml_pos(const char * s, const char * attr)
 {
@@ -1763,6 +2024,7 @@ int Hunspell::spellml(char*** slst, const char * word)
   q2 = strstr(q2, "<word");
   if (!q2) return 0; // bad XML input
   if (check_xml_par(q, "type=", "analyze")) {
+<<<<<<< HEAD
       int n = 0, s = 0;
       if (get_xml_par(cw, strchr(q2, '>'), MAXWORDUTF8LEN - 10)) n = analyze(slst, cw);
       if (n == 0) return 0;
@@ -1783,6 +2045,28 @@ int Hunspell::spellml(char*** slst, const char * word)
       }
       strcat(r, "</code>");
       (*slst)[0] = r;
+=======
+      int n = 0;
+      if (get_xml_par(cw, strchr(q2, '>'), MAXWORDUTF8LEN - 10)) n = analyze(slst, cw);
+      if (n == 0) return 0;
+      // convert the result to <code><a>ana1</a><a>ana2</a></code> format
+      std::string r;
+      r.append("<code>");
+      for (int i = 0; i < n; i++) {
+        r.append("<a>");
+
+        std::string entry((*slst)[i]);
+        free((*slst)[i]);
+        mystrrep(entry, "\t", " ");
+        mystrrep(entry, "&", "&amp;");
+        mystrrep(entry, "<", "&lt;");
+        r.append(entry);
+
+        r.append("</a>");
+      }
+      r.append("</code>");
+      (*slst)[0] = mystrdup(r.c_str());
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
       return 1;
   } else if (check_xml_par(q, "type=", "stem")) {
       if (get_xml_par(cw, strchr(q2, '>'), MAXWORDUTF8LEN - 1)) return stem(slst, cw);
@@ -1811,12 +2095,17 @@ int Hunspell::spellml(char*** slst, const char * word)
 
 
 #ifdef HUNSPELL_EXPERIMENTAL
+<<<<<<< HEAD
 // XXX need UTF-8 support
+=======
+// XXX is UTF-8 support OK?
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 char * Hunspell::morph_with_correction(const char * word)
 {
   char cw[MAXWORDUTF8LEN];
   char wspace[MAXWORDUTF8LEN];
   if (! pSMgr || maxdic == 0) return NULL;
+<<<<<<< HEAD
   int wl = strlen(word);
   if (utf8) {
     if (wl >= MAXWORDUTF8LEN) return NULL;
@@ -1826,6 +2115,24 @@ char * Hunspell::morph_with_correction(const char * word)
   int captype = 0;
   int abbv = 0;
   wl = cleanword(cw, word, &captype, &abbv);
+=======
+  w_char unicw[MAXWORDLEN];
+  int nc = strlen(word);
+  if (utf8) {
+    if (nc >= MAXWORDUTF8LEN) return NULL;
+  } else {
+    if (nc >= MAXWORDLEN) return NULL;
+  }
+  int captype = 0;
+  int abbv = 0;
+  int wl = 0;
+
+  // input conversion
+  RepList * rl = (pAMgr) ? pAMgr->get_iconvtable() : NULL;
+  if (rl && rl->conv(word, wspace)) wl = cleanword2(cw, wspace, unicw, &nc, &captype, &abbv);
+  else wl = cleanword2(cw, word, unicw, &nc, &captype, &abbv);
+
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
   if (wl == 0) return NULL;
 
   char result[MAXLNLEN];
@@ -1856,7 +2163,11 @@ char * Hunspell::morph_with_correction(const char * word)
                    }
      case INITCAP: {
                      memcpy(wspace,cw,(wl+1));
+<<<<<<< HEAD
                      mkallsmall(wspace);
+=======
+                     mkallsmall2(wspace, unicw, nc);
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
                      st = pSMgr->suggest_morph_for_spelling_error(wspace);
                      if (st) {
                         mystrcat(result, st, MAXLNLEN);
@@ -1872,7 +2183,11 @@ char * Hunspell::morph_with_correction(const char * word)
                          memcpy(wspace,cw,wl);
                          *(wspace+wl) = '.';
                          *(wspace+wl+1) = '\0';
+<<<<<<< HEAD
                          mkallsmall(wspace);
+=======
+                         mkallsmall2(wspace, unicw, nc);
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
                          st = pSMgr->suggest_morph_for_spelling_error(wspace);
                          if (st) {
                             if (*result) mystrcat(result, "\n", MAXLNLEN);
@@ -1896,7 +2211,11 @@ char * Hunspell::morph_with_correction(const char * word)
                         free(st);
                      }
                      memcpy(wspace,cw,(wl+1));
+<<<<<<< HEAD
                      mkallsmall(wspace);
+=======
+                     mkallsmall2(wspace, unicw, nc);
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
                      st = pSMgr->suggest_morph_for_spelling_error(wspace);
                      if (st) {
                         if (*result) mystrcat(result, "\n", MAXLNLEN);
@@ -1912,7 +2231,11 @@ char * Hunspell::morph_with_correction(const char * word)
                         mystrcat(result, st, MAXLNLEN);
                         free(st);
                      }
+<<<<<<< HEAD
                      mkallsmall(wspace);
+=======
+                     mkallsmall2(wspace, unicw, nc);
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
                      st = pSMgr->suggest_morph_for_spelling_error(wspace);
                      if (st) {
                         if (*result) mystrcat(result, "\n", MAXLNLEN);
@@ -1936,7 +2259,11 @@ char * Hunspell::morph_with_correction(const char * word)
                             mystrcat(result, st, MAXLNLEN);
                             free(st);
                         }
+<<<<<<< HEAD
                         mkallsmall(wspace);
+=======
+                        mkallsmall2(wspace, unicw, nc);
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
                         st = pSMgr->suggest_morph_for_spelling_error(wspace);
                         if (st) {
                           if (*result) mystrcat(result, "\n", MAXLNLEN);
@@ -1963,21 +2290,29 @@ char * Hunspell::morph_with_correction(const char * word)
 
 Hunhandle *Hunspell_create(const char * affpath, const char * dpath)
 {
+<<<<<<< HEAD
 #ifdef HUNSPELL_CHROME_CLIENT
         return NULL;
 #else
         return (Hunhandle*)(new Hunspell(affpath, dpath));
 #endif
+=======
+        return (Hunhandle*)(new Hunspell(affpath, dpath));
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 }
 
 Hunhandle *Hunspell_create_key(const char * affpath, const char * dpath,
     const char * key)
 {
+<<<<<<< HEAD
 #ifdef HUNSPELL_CHROME_CLIENT
         return NULL;
 #else
         return (Hunhandle*)(new Hunspell(affpath, dpath, key));
 #endif
+=======
+        return (Hunhandle*)(new Hunspell(affpath, dpath, key));
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
 }
 
 void Hunspell_destroy(Hunhandle *pHunspell)
@@ -2054,3 +2389,45 @@ int Hunspell_remove(Hunhandle *pHunspell, const char * word) {
 void Hunspell_free_list(Hunhandle *, char *** slst, int n) {
         freelist(slst, n);
 }
+<<<<<<< HEAD
+=======
+
+int Hunspell::suffix_suggest(char*** slst, const char * root_word){
+  struct hentry * he = NULL;
+  int len;
+  std::string w2;
+  const char * word;
+  char * ignoredchars = pAMgr->get_ignore();
+  if (ignoredchars != NULL) {
+    w2.assign(root_word);
+    if (utf8) {
+      int ignoredchars_utf16_len;
+      unsigned short * ignoredchars_utf16 = pAMgr->get_ignore_utf16(&ignoredchars_utf16_len);
+      remove_ignored_chars_utf(w2, ignoredchars_utf16, ignoredchars_utf16_len);
+    } else {
+      remove_ignored_chars(w2,ignoredchars);
+    }
+    word = w2.c_str();
+  } else word = root_word;
+  
+  len = strlen(word);
+
+  if (!len)
+    return 0;
+  
+  char ** wlst = (char **) malloc(MAXSUGGESTION * sizeof(char *));
+  if (wlst == NULL) return -1;
+  *slst = wlst;
+  for (int i = 0; i < MAXSUGGESTION; i++) {
+    wlst[i] = NULL;
+  }
+
+  for (int i = 0; (i < maxdic) && !he; i++) {
+    he = (pHMgr[i])->lookup(word);
+  }
+  if (he){
+    return pAMgr->get_suffix_words(he->astr,he->alen,root_word,*slst);
+  }
+  return 0;
+}
+>>>>>>> 8f88d9931e4741e079f22440220798dbe7ab334c
