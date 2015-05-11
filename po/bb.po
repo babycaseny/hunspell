@@ -53,6 +53,8 @@ msgid ""
 "\t%s\t\tFile: %s\n"
 "\n"
 msgstr ""
+"\t%s\t\tFayl: %s\n"
+"\n"
 
 #: src/tools/hunspell.cxx:943
 msgid ""
@@ -137,11 +139,11 @@ msgstr ""
 #. previously in the  translation of "R)epl" before
 #: src/tools/hunspell.cxx:1039
 msgid "r"
-msgstr ""
+msgstr "r"
 
 #: src/tools/hunspell.cxx:1051
 msgid "Replace with: "
-msgstr ""
+msgstr "Rīpleis wiŧ"
 
 #. TRANSLATORS: translate these letters according to the shortcut letter used
 #. previously in the  translation of "U)ncap" and I)nsert before
